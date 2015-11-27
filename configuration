@@ -1,0 +1,7 @@
+[common]
+# set logfilename if need log to file
+#log_filename = log
+log_level = DEBUG
+api_version = 1
+
+[model]
