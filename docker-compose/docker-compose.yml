@@ -1,9 +1,8 @@
-hmsserver2:
+hmsserver3:
     build: .
     # command: gunicorn --debug --log-level debug -b 0.0.0.0:8080 server.gateway:app
-    # command: bash -c "pwd"
     command: python3 -m server.gateway
     ports:
       - "8080:8080"
     volumes:
-      - /home/vagrant/data/pa2515/server:/server
+        - .:/server

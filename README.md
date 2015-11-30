@@ -1,6 +1,41 @@
 Hospital Management System Server
 ================
 
+## How to start the server
+There are 2 ways to start up the server, the normal way and the docker way.
+
+### Normal way
+1. Install the requirements
+```
+pip3 install -r docker-compose/requirements.txt
+```
+
+2. Create the db file
+```
+python3 -m server.models
+```
+
+3. Start the server
+```
+python3 -m server.gateway
+```
+
+### Docker to setup server
+
+The environment is organized as a docker container, locates in docker-compose/,
+just docker-compose up. The port can be changed as you like in docker-compose.yml
+
+To do this:
+1. Install docker 
+```
+$ wget -qO- https://get.docker.com/ | sh
+```
+
+2. Install docker-comopse
+```
+$ pip install docker-compose
+```
+
 Functions
 ---------------
 
@@ -28,11 +63,9 @@ Notice
 
 Requirements
 ---------------
-The environment is organized as a docker container, locates in docker-compose/,
-just docker-compose up. The port can be changed as you like in docker-compose.yml
-
 - Python >= 2.7 or 3.4
 - Gunicorn
 - Falcon >= 0.3.0
 - peewee >= 2.6.1
 - Six >= 1.9
+
