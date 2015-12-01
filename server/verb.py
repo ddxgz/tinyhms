@@ -28,4 +28,5 @@ if __name__ == '__main__':
         print(visit.post(suffix_url='doctor',
             headers=headers, data=data))
     elif len(sys.argv) == 2:
-        pass
+        uid = sys.argv[1]
+        print(visit.get(suffix_url='doctor/{}'.format(uid), headers=headers))

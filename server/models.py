@@ -5,7 +5,7 @@ from peewee import SqliteDatabase, Model, CharField, BooleanField, IntegerField
 
 from server.config import conf
 from server.utils import logger
-# from myexceptions import UserNotExistException, PasswordIncorrectException
+from server.hmsexceptions import UserNotExistException
 
 
 
@@ -48,7 +48,7 @@ class DoctorModel(BaseModel):
         return self.uid
 
     @classmethod
-    def create_by_dict(self, post_data):
+    def create_by_dict(cls, post_data):
         return DoctorModel.create(
             uid=str(uuid.uuid4()),
             firstname=post_data.get('firstname'),
@@ -60,6 +60,27 @@ class DoctorModel(BaseModel):
             experience=int(post_data.get('experience', '0')),
             gender=post_data.get('gender', 'm'),
             )
+
+    @classmethod
+    def get_dict(cls, uid):
+        logger.debug('in DoctorModel.get_dict ')
+        user_dict = {}
+        try:
+            user = DoctorModel.get(DoctorModel.uid==uid)
+
+        except Exception as ex:
+            logger.debug('in DoctorModel.get_dict exception, ', ex)
+            raise UserNotExistException()
+        else:
+            user_dict['firstname'] = user.firstname
+            user_dict['lastname'] = user.lastname
+            user_dict['email'] = user.email
+            user_dict['qualification'] = user.qualification
+            user_dict['profession'] = user.profession
+            user_dict['experience'] = str(user.experience)
+            user_dict['gender'] = user.gender
+            logger.debug('after ger user: %s' % uid)
+            return user_dict
 
 
 def create_tables():
