@@ -7,5 +7,5 @@ hmsserver3:
     volumes:
         - .:/server
 
-redis:
-  image: redis:3.0.2
+# redis:
+#   image: redis:3.0.2
