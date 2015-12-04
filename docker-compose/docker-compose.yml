@@ -6,3 +6,6 @@ hmsserver3:
       - "8080:8080"
     volumes:
         - .:/server
+
+redis:
+  image: redis:3.0.2
