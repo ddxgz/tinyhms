@@ -11,7 +11,10 @@ from server.hmsexceptions import UserNotExistException
 
 # create a peewee database instance -- our models will use this database to
 # persist information
-database = SqliteDatabase('hms.sqlite3')
+if conf.db_type == 'sqlite3':
+    database = SqliteDatabase('{}.sqlite3'.format(conf.db_filename))
+elif conf.db_type == 'mysql':
+    logger.error('MySQL support is not implemented yet!')
 
 
 class BaseModel(Model):

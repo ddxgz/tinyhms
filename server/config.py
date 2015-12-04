@@ -36,5 +36,18 @@ class Config(object):
                 self.log_level = log_level.upper()
             except:
                 self.log_level = None
+        if config.has_section('model'):
+            try:
+                db_type = config.get('model', 'db_type')
+                self.db_type = db_type.lower()
+            except:
+                self.db_type = 'sqlite3'
+            if self.db_type == 'sqlite3':
+                try:
+                    db_filename = config.get('model', 'db_filename')
+                    self.db_filename = db_filename.lower()
+                except:
+                    self.db_filename = 'hms'
+
 
 conf = Config()
