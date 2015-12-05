@@ -16,17 +16,28 @@ headers = { 'username':'user1',
 #             'to':'user1@email.com' }
 #         }"""
 #
+# data = {
+#         'firstname':'aaa',
+#         'lastname':'bbb',
+#         'experience':'10'
+#         }
 data = {
-        'firstname':'aaa',
-        'lastname':'bbb',
-        'experience':'10'
-        }
-
+    'doctorid':'d001',
+    'datatimeslot':'201511201300',
+    'patientid':'p001',
+    'illness': 'xxx',
+}
 
 if __name__ == '__main__':
+    # if len(sys.argv) == 1:
+    #     print(visit.post(suffix_url='doctor',
+    #         headers=headers, data=data))
+    # elif len(sys.argv) == 2:
+    #     uid = sys.argv[1]
+    #     print(visit.get(suffix_url='doctor/{}'.format(uid), headers=headers))
     if len(sys.argv) == 1:
-        print(visit.post(suffix_url='doctor',
+        print(visit.post(suffix_url='appointment',
             headers=headers, data=data))
     elif len(sys.argv) == 2:
-        uid = sys.argv[1]
-        print(visit.get(suffix_url='doctor/{}'.format(uid), headers=headers))
+        docidtimepaid = sys.argv[1]
+        print(visit.get(suffix_url='appointment/{}'.format(docidtimepaid), headers=headers))

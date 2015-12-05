@@ -1,11 +1,12 @@
 hmsserver3:
     build: .
     # command: gunicorn --debug --log-level debug -b 0.0.0.0:8080 server.gateway:app
-    command: python3 -m server.gateway
+    # command: python3 -m server.gateway
+    command: ls
     ports:
       - "8080:8080"
     volumes:
-        - .:/server
+        - /home/vagrant/pa2515/server:/server
 
-# redis:
-#   image: redis:3.0.2
+redis:
+  image: redis:3.0.2

@@ -11,25 +11,26 @@ def make_appointment(post_data):
 
     :param post_data: dict
     :returns: a status, a str( appointment's url on success, err info on failure)
+
+    with database.atomic():
+                doctor = DoctorModel.create_by_dict(post_data)
+                logger.debug(doctor)
+                logger.debug('in database.atomic')
+        except peewee.IntegrityError:
+            logger.warning('in doctor model create except')
+
+    1. check if patient and doctor exist in db
+    2. check if the appointment exist in redis
+    3. make appointment if 1 and 2 ok
+    4. return if appointment exists, with reason if fail
+
     """
     print(post_data)
     try:
         logger.debug('in make_appointment')
 
     # check db when patient is ok
-    """        with database.atomic():
-                doctor = DoctorModel.create_by_dict(post_data)
-                logger.debug(doctor)
-                logger.debug('in database.atomic')
-        except peewee.IntegrityError:
-            logger.warning('in doctor model create except')"""
 
-        """
-        1. check if patient and doctor exist in db
-        2. check if the appointment exist in redis
-        3. make appointment if 1 and 2 ok
-        4. return if appointment exists, with reason if fail
-        """
     except Exception as ex:
         logger.error('Exception: ', ex)
         # q = DoctorModel.delete().where(DoctorModel.uid==doctor)
@@ -37,7 +38,7 @@ def make_appointment(post_data):
         return 0, 'make_appointment failed, did not make_appointment'
 
     else:
-        return 1, str(doctor)
+        return 1, str('d001/2015/pa002')
 
 
 def get_appointment(appointment_url):

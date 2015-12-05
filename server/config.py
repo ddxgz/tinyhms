@@ -17,7 +17,7 @@ class Config(object):
         else:
             config_file = os.environ.get('',
                                      './configuration')
-        config = configparser.SafeConfigParser()
+        config = configparser.ConfigParser()
         config.read(config_file)
         if config.has_section('common'):
             #self.mq_host = config.get('common', 'mq_host')

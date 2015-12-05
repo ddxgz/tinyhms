@@ -86,11 +86,16 @@ class DoctorModel(BaseModel):
             return user_dict
 
 
-def create_tables():
+def create_tables(config):
+    if config.db_type == 'sqlite3':
+        database = SqliteDatabase('{}.sqlite3'.format(config.db_filename))
+    elif config.db_type == 'mysql':
+        logger.error('MySQL support is not implemented yet!')
+
     database.connect()
     database.create_tables([DoctorModel], safe=True)
     # database.create_tables([DoctorModel])
 
 
 if __name__ == '__main__':
-    create_tables()
+    create_tables(conf)
