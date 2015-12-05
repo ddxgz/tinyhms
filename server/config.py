@@ -36,6 +36,11 @@ class Config(object):
                 self.log_level = log_level.upper()
             except:
                 self.log_level = None
+            try:
+                redis_ip = config.get('common', 'redis_ip')
+                self.redis_ip = redis_ip
+            except:
+                self.redis_ip = '127.0.0.1'
         if config.has_section('model'):
             try:
                 db_type = config.get('model', 'db_type')

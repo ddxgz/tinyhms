@@ -1,6 +1,7 @@
 import json
 
 from server.models import database, DoctorModel
+from server import rediscli
 from server.hmsexceptions import UserNotExistException
 from server.utils import logger
 
@@ -30,6 +31,9 @@ def make_appointment(post_data):
         logger.debug('in make_appointment')
 
     # check db when patient is ok
+        rediscli.set_data(
+            post_data['doctorid']+'/'+post_data['datatimeslot']+'/'+post_data['patientid'], 
+            post_data['illness'])
 
     except Exception as ex:
         logger.error('Exception: ', ex)
@@ -38,7 +42,7 @@ def make_appointment(post_data):
         return 0, 'make_appointment failed, did not make_appointment'
 
     else:
-        return 1, str('d001/2015/pa002')
+        return 1, str(post_data['doctorid']+'/'+post_data['datatimeslot']+'/'+post_data['patientid'])
 
 
 def get_appointment(appointment_url):
@@ -53,7 +57,7 @@ def get_appointment(appointment_url):
     try:
         logger.debug('in get_appointment')
         # check redis
-        # appointment = DoctorModel.get_dict(appointment_url)
+        appointment = str(rediscli.get_data(appointment_url))
         logger.debug(appointment)
     # except UserNotExistException:
     #     logger.debug('in UserNotExistException')
@@ -62,5 +66,5 @@ def get_appointment(appointment_url):
         logger.error('Exception: ', ex)
         return 0, 'get appointment failed'
     else:
-        appointment_json = json.dumps(appointment)
+        appointment_json = json.dumps({'illness':appointment})
         return 1, appointment_json
