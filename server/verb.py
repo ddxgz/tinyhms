@@ -18,16 +18,24 @@ headers = { 'username':'user1',
 #         }"""
 #
 # data = {
+#        'email': 'a@b.com',
 #         'firstname':'aaa',
 #         'lastname':'bbb',
 #         'experience':'10'
 #         }
+# data = {
+#     'doctorid':'d001',
+#     'datatimeslot':'201511201300',
+#     'patientid':'p001',
+#     'illness': 'illness01',
+# }
+#
 data = {
-    'doctorid':'d001',
-    'datatimeslot':'201511201300',
-    'patientid':'p001',
-    'illness': 'illness01',
-}
+        'email': 'a@b.com',
+        'firstname':'aaa',
+        'lastname':'bbb',
+        'birthdate':'20151111'
+        }
 
 if __name__ == '__main__':
     # if len(sys.argv) == 1:
@@ -36,9 +44,16 @@ if __name__ == '__main__':
     # elif len(sys.argv) == 2:
     #     uid = sys.argv[1]
     #     print(visit.get(suffix_url='doctor/{}'.format(uid), headers=headers))
+    # if len(sys.argv) == 1:
+    #     print(visit.post(suffix_url='appointment',
+    #         headers=headers, data=data))
+    # elif len(sys.argv) == 2:
+    #     docidtimepaid = sys.argv[1]
+    #     print(visit.get(suffix_url='appointment/{}'.format(docidtimepaid), headers=headers))
+    #
     if len(sys.argv) == 1:
-        print(visit.post(suffix_url='appointment',
+        print(visit.post(suffix_url='patient',
             headers=headers, data=data))
     elif len(sys.argv) == 2:
-        docidtimepaid = sys.argv[1]
-        print(visit.get(suffix_url='appointment/{}'.format(docidtimepaid), headers=headers))
+        uid = sys.argv[1]
+        print(visit.get(suffix_url='patient/{}'.format(uid), headers=headers))

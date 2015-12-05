@@ -35,10 +35,10 @@ class DoctorModel(BaseModel):
 
     }
     """
-    uid = CharField(unique=True)
+    # uid = CharField(unique=True)
+    email = CharField(max_length=100, unique=True)
     firstname = CharField(max_length=100)
     lastname = CharField(max_length=100)
-    email = CharField()
     qualification = CharField(max_length=100)
     profession = CharField(max_length=100)
     experience = IntegerField()
@@ -48,15 +48,15 @@ class DoctorModel(BaseModel):
         order_by = ('lastname',)
 
     def __str__(self):
-        return self.uid
+        return self.email
 
     @classmethod
     def create_by_dict(cls, post_data):
         return DoctorModel.create(
-            uid=str(uuid.uuid4()),
+            # uid=str(uuid.uuid4()),
             firstname=post_data.get('firstname'),
             lastname=post_data.get('lastname'),
-            email=post_data.get('email', 'no'),
+            email=post_data.get('email'),
             qualification=post_data.get('qualification', 'q'),
             profession=post_data.get('profession', 'p'),
             # need a better solution
@@ -65,11 +65,11 @@ class DoctorModel(BaseModel):
             )
 
     @classmethod
-    def get_dict(cls, uid):
+    def get_dict(cls, email):
         logger.debug('in DoctorModel.get_dict ')
         user_dict = {}
         try:
-            user = DoctorModel.get(DoctorModel.uid==uid)
+            user = DoctorModel.get(DoctorModel.email==email)
 
         except Exception as ex:
             logger.debug('in DoctorModel.get_dict exception, ', ex)
@@ -82,7 +82,106 @@ class DoctorModel(BaseModel):
             user_dict['profession'] = user.profession
             user_dict['experience'] = str(user.experience)
             user_dict['gender'] = user.gender
-            logger.debug('after ger user: %s' % uid)
+            logger.debug('after ger user: %s' % email)
+            return user_dict
+
+
+
+class PatientModel(BaseModel):
+    """
+    {
+        'first_name':'',
+        'last_name':'',
+        'birthdate':'',
+        'mobile_phone','',
+        'email':'',
+        'address':'',
+        'gender':'',
+        'height':'',
+        'weight':'',
+        'blood_group':'',
+        'occupation':'',
+        'marriage':'',
+        'reference':'',
+        'doctor_in_charge':'',
+        'allergy':[],
+        'accompanied_by':'',
+    }
+    """
+    # uid = CharField(unique=True)
+    email = CharField(max_length=100, unique=True)
+    firstname = CharField(max_length=100)
+    lastname = CharField(max_length=100)
+    # email = CharField()
+    birthdate = CharField()
+    address = CharField()
+    mobile_phone = IntegerField()
+    gender = CharField()
+    height = IntegerField()
+    weight = IntegerField()
+    blood_group = CharField()
+    occupation = CharField()
+    marriage = CharField()
+    reference = CharField(max_length=100)
+    doctor_in_charge = CharField()
+    allergy = CharField()
+    accompanied_by = CharField()
+
+    class Meta:
+        order_by = ('lastname',)
+
+    def __str__(self):
+        return self.email
+
+    @classmethod
+    def create_by_dict(cls, post_data):
+        return PatientModel.create(
+            # uid = str(uuid.uuid4()),
+            firstname = post_data.get('firstname'),
+            lastname = post_data.get('lastname'),
+            birthdate = post_data.get('birthdate', '2015'),
+            email = post_data.get('email', 'no'),
+            address = post_data.get('address', 'add'),
+            mobile_phone = post_data.get('moblie_phone', 138),
+            blood_group = post_data.get('blood_group', 'a'),
+            gender = post_data.get('gender', 'm'),
+            height = post_data.get('height', 170),
+            weight = post_data.get('weight', 180),
+            occupation = post_data.get('occupation', '111'),
+            marriage = post_data.get('marriage', 'y'),
+            reference = post_data.get('reference', '1'),
+            doctor_in_charge = post_data.get('doctor_in_charge', '1'),
+            allergy = post_data.get('allergy', '1'),
+            accompanied_by = post_data.get('accompanied_by', '1'),
+            )
+
+    @classmethod
+    def get_dict(cls, email):
+        logger.debug('in PatientModel.get_dict ')
+        user_dict = {}
+        try:
+            user = PatientModel.get(PatientModel.email==email)
+
+        except Exception as ex:
+            logger.debug('in PatientModel.get_dict exception, ', ex)
+            raise UserNotExistException()
+        else:
+            user_dict['firstname'] = user.firstname
+            user_dict['lastname'] = user.lastname
+            user_dict['email'] = user.email
+            user_dict['birthdate'] = user.birthdate
+            user_dict['address'] = user.address
+            user_dict['mobile_phone'] = user.mobile_phone
+            user_dict['gender'] = user.gender
+            user_dict['height'] = user.height
+            user_dict['weight'] = user.weight
+            user_dict['occupation'] = user.occupation
+            user_dict['marriage'] = user.marriage
+            user_dict['reference'] = user.reference
+            user_dict['doctor_in_charge'] = user.doctor_in_charge
+            user_dict['allergy'] = user.allergy
+            user_dict['accompanied_by'] = user.accompanied_by
+            logger.debug('after ger user: %s' % email)
             return user_dict
 
 
@@ -93,7 +192,7 @@ def create_tables(config):
         logger.error('MySQL support is not implemented yet!')
 
     database.connect()
-    database.create_tables([DoctorModel], safe=True)
+    database.create_tables([DoctorModel, PatientModel], safe=True)
     # database.create_tables([DoctorModel])
 
 

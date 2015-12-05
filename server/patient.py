@@ -1,28 +1,27 @@
 import json
 
-from server.models import database, DoctorModel
+from server.models import database, PatientModel
 from server.hmsexceptions import UserNotExistException
 from server.utils import logger
 
 
-def register_doctor(post_data):
+def register_patient(post_data):
     """
-    Register a doctor in the system. The post data is in json format.
-
+    Register a patient in the system. The post data is in json format.
     :param post_data: dict
-    :returns: a status, a str( doctor's info on success, err info on failure)
+    :returns: a status, a str( patient's info on success, err info on failure)
     """
     print(post_data)
-    doctor = ''
+    patient = ''
     try:
-        logger.debug('in register_doctor')
+        logger.debug('in register_patient')
 
         with database.atomic():
-            doctor = DoctorModel.create_by_dict(post_data)
-            logger.debug(doctor)
+            patient = PatientModel.create_by_dict(post_data)
+            logger.debug(patient)
             logger.debug('in database.atomic')
     # except peewee.IntegrityError:
-    #     logger.warning('in doctor model create except')
+    #     logger.warning('in patient model create except')
 
         # # `username` is a unique column, so this username already exists,
         # # making it safe to call .get().
@@ -37,35 +36,33 @@ def register_doctor(post_data):
         #     logger.debug('change user data failed...')
     except Exception as ex:
         logger.error('Exception: ', ex)
-        q = DoctorModel.delete().where(DoctorModel.email==doctor)
+        q = PatientModel.delete().where(PatientModel.email==patient)
         q.execute()
-        return 0, 'create doctor failed, did not create doctor'
+        return 0, 'create patient failed, did not create patient'
 
     else:
-        return 1, str(doctor)
+        return 1, str(patient)
 
 
-def get_doctor(doctorid):
+def get_patient(patientid):
     """
-    Get info of a doctor in the system.
-
-    :param doctorid: doctor's uid
-    :returns: a status, a str ( doctor's info on success, err info on failure)
+    Get info of a patient in the system.
+    :param patientid: patient's uid
+    :returns: a status, a str ( patient's info on success, err info on failure)
     """
-    print(doctorid)
+    print(patientid)
     info = {}
     try:
-        logger.debug('in get_doctor')
-        doctor_dict = DoctorModel.get_dict(doctorid)
-        logger.debug(doctor_dict)
+        logger.debug('in get_patient')
+        patient_dict = PatientModel.get_dict(patientid)
+        logger.debug(patient_dict)
     except UserNotExistException:
         logger.debug('in UserNotExistException')
-        return 0, 'get doctor failed, the required Doctor Did Not Exist'
+        return 0, 'get patient failed, the required patient Did Not Exist'
     except Exception as ex:
         logger.error('Exception: ', ex)
-        return 0, 'get doctor failed'
+        return 0, 'get patient failed'
     else:
-        doctor_json = json.dumps(doctor_dict)
-        logger.debug(doctor_json)
-
-        return 1, doctor_json
+        patient_json = json.dumps(patient_dict)
+        logger.debug(patient_json)
+        return 1, patient_json

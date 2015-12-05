@@ -8,7 +8,7 @@ import functools
 
 import falcon
 
-from server import doctor, appointment
+from server import doctor, patient, appointment
 from server.utils import logger
 
 
@@ -73,15 +73,13 @@ class RegDoctorListener:
                 resp_dict['doctorid'] = doctorid
                 # resp.status = status or falcon.HTTP_200
                 resp.status = falcon.HTTP_200
-                resp.body = json.dumps(resp_dict,
-                    sort_keys=True, indent=4)
+                resp.body = json.dumps(resp_dict)
             else:
                 logger.exception('return error when try to register doctor, ', ex)
                 resp_dict['errinfo'] = 'Error when register doctor {}'.format(
                     post_data['lastname'])
                 resp.status = falcon.HTTP_400
-                resp.body = json.dumps(resp_dict, sort_keys=True,
-                    indent=4)
+                resp.body = json.dumps(resp_dict)
 
 class DoctorListener:
 
@@ -125,15 +123,129 @@ class DoctorListener:
                 resp_dict['doctorinfo'] = doctorinfo
                 # resp.status = status or falcon.HTTP_200
                 resp.status = falcon.HTTP_200
-                resp.body = json.dumps(resp_dict,
-                    sort_keys=True, indent=4)
+                resp.body = json.dumps(resp_dict)
             else:
                 logger.exception('return error when try to get doctor')
                 resp_dict['info'] = 'Error when get doctor {}'.format(
                     doctorid)
                 resp.status = falcon.HTTP_400
-                resp.body = json.dumps(resp_dict, sort_keys=True,
-                    indent=4)
+                resp.body = json.dumps(resp_dict)
+
+    def on_put(self, req, resp):
+        pass
+
+    def on_delete(self, req, resp):
+        pass
+
+
+class RegPatientListener:
+
+    @falcon.before(max_body(64*1024))
+    def on_post(self, req, resp):
+        """
+        Register a doctor in the system. The post data is in json format.
+
+        :param req.header.username: username
+        :param req.header.password: password
+        :returns: a json contains patient's id, or other related info
+                {"patientid":'d001', "info":{"info1":''}}
+        """
+        resp_dict = {}
+        try:
+            username = req.get_header('username') or 'un'
+            password = req.get_header('password') or 'pw'
+            # post_data = req.params.get('data')
+            # have pre-processed by JSONTranslator, post_data is a dict
+            post_data = req.context['doc']
+            # logger.debug('username:%s, password:%s, data:%s'
+            #     % (username, password, post_data))
+            # logger.debug('env:%s , \nstream:%s, \ncontext:, \ninput:' % (
+            #     req.env, req.stream.read()))
+        except Exception as ex:
+            logger.error('error when try to get headers and data, ', ex)
+            raise falcon.HTTPBadRequest('bad req',
+                'when read from req, please check if the req is correct.')
+        try:
+            """
+            handle_request:
+
+            """
+            status, patientid = patient.register_patient(post_data)
+
+        except Exception as ex:
+            logger.exception('error when register patient, ', ex)
+            resp_dict['info'] = 'Error when register patient {}'.format(
+                post_data['lastname'])
+            resp.status = falcon.HTTP_500
+            resp.body = json.dumps(resp_dict, sort_keys=True, indent=4)
+        else:
+            if status:
+                logger.debug('register ok, status positive')
+                resp_dict['info'] = 'Register patient {} success'.format(
+                    post_data['lastname'])
+                resp_dict['doctorid'] = patientid
+                # resp.status = status or falcon.HTTP_200
+                resp.status = falcon.HTTP_200
+                resp.body = json.dumps(resp_dict)
+            else:
+                logger.exception('return error when try to register patient, ', ex)
+                resp_dict['errinfo'] = 'Error when register patient {}'.format(
+                    post_data['lastname'])
+                resp.status = falcon.HTTP_400
+                resp.body = json.dumps(resp_dict)
+                # resp.body = json.dumps(resp_dict, sort_keys=True,
+                #     indent=4)
+
+
+class PatientListener:
+
+    def on_get(self, req, resp, patientid):
+        """
+        Get info of a patient in the system. The response data is in json format.
+
+        :param req.header.username: username
+        :param req.header.password: password
+        :returns: a json contains doctor's info
+                {"patientid":'d001', "info":{"info1":''}}
+        """
+        resp_dict = {}
+        try:
+            username = req.get_header('username') or 'un'
+            password = req.get_header('password') or 'pw'
+            # logger.debug('env:%s , \nstream:%s, \ncontext:, \ninput:' % (
+            #     req.env, req.stream.read()))
+        except Exception as ex:
+            logger.error('error when try to get headers and data, ', ex)
+            raise falcon.HTTPBadRequest('bad req',
+                'when read from req, please check if the req is correct.')
+        try:
+            """
+            handle_request:
+
+            """
+            status, patientinfo = patient.get_patient(patientid)
+
+        except Exception as ex:
+            logger.exception('error when get patient, ', ex)
+            resp_dict['info'] = 'Error when get patient {}'.format(
+                patientid)
+            resp.status = falcon.HTTP_500
+            resp.body = json.dumps(resp_dict, sort_keys=True, indent=4)
+        else:
+            if status:
+                logger.debug('get ok, status positive')
+                resp_dict['info'] = 'Get patient {} success'.format(
+                    patientid)
+                resp_dict['patientinfo'] = patientinfo
+                # resp.status = status or falcon.HTTP_200
+                resp.status = falcon.HTTP_200
+                resp.body = json.dumps(resp_dict)
+            else:
+                logger.exception('return error when try to get patient')
+                resp_dict['info'] = 'Error when get patient {}'.format(
+                    patientid)
+                resp.status = falcon.HTTP_400
+                resp.body = json.dumps(resp_dict)
 
     def on_put(self, req, resp):
         pass
@@ -192,8 +304,7 @@ class MakeAppointmentListener:
                 resp_dict['errinfo'] = 'Error when make appointment {}'.format(
                     post_data['doctorid']+post_data['patientid']+post_data['datatimeslot'])
                 resp.status = falcon.HTTP_400
-                resp.body = json.dumps(resp_dict, sort_keys=True,
-                    indent=4)
+                resp.body = json.dumps(resp_dict)
 
 
 class AppointmentListener:
@@ -225,6 +336,67 @@ class AppointmentListener:
             """
             apmt_url = doctorid + '/' + datetimeslot + '/' + patientid
             status, appointment_info = appointment.get_appointment(apmt_url)
+
+        except Exception as ex:
+            logger.exception('error when get appointment_info, ', ex)
+            resp_dict['info'] = 'Error when get appointment_info {}'.format(
+                apmt_url)
+            resp.status = falcon.HTTP_500
+            resp.body = json.dumps(resp_dict, sort_keys=True, indent=4)
+        else:
+            if status:
+                logger.debug('get ok, status positive')
+                resp_dict['info'] = 'Get appointment_info {} success'.format(
+                    apmt_url)
+                resp_dict['appointment_info'] = appointment_info
+                # resp.status = status or falcon.HTTP_200
+                resp.status = falcon.HTTP_200
+                resp.body = json.dumps(resp_dict,
+                    sort_keys=True, indent=4)
+            else:
+                logger.exception('return error when try to get appointment_info')
+                resp_dict['info'] = 'Error when get appointment_info {}'.format(
+                    apmt_url)
+                resp.status = falcon.HTTP_400
+                resp.body = json.dumps(resp_dict, sort_keys=True,
+                    indent=4)
+
+    def on_put(self, req, resp):
+        pass
+
+    def on_delete(self, req, resp):
+        pass
+
+
+
+class AppointmentListListener:
+
+
+    def on_get(self, req, resp, doctorid, date):
+        """
+        Get info of a doctor in the system. The response data is in json format.
+
+        :param req.header.username: username
+        :param req.header.password: password
+        :returns: a json contains doctor's info
+                {"doctorid":'d001', "info":{"info1":''}}
+        """
+        resp_dict = {}
+        try:
+            username = req.get_header('username') or 'un'
+            password = req.get_header('password') or 'pw'
+            # logger.debug('env:%s , \nstream:%s, \ncontext:, \ninput:' % (
+            #     req.env, req.stream.read()))
+        except Exception as ex:
+            logger.error('error when try to get headers and data, ', ex)
+            raise falcon.HTTPBadRequest('bad req',
+                'when read from req, please check if the req is correct.')
+        try:
+            """
+            handle_request:
+
+            """
+            status, appointment_info = appointment.check_appointment(doctorid, date)
 
         except Exception as ex:
             logger.exception('error when get appointment_info, ', ex)

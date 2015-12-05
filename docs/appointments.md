@@ -18,6 +18,19 @@ A patient can only have one appointment on one day. If need to modify an appoint
 
 ## Look up an Appointment
 
+### GET `/v1/appointment/doctorid/date`
+> such as /v1/appointment/20151205
+> returns the available appointments
+>
+```
+{
+    'doctorid':['timeslot1', 'timeslot2'],
+    ...
+}
+```
+
+## Look up an Appointment
+
 ### GET `/v1/appointment/doctorID/datetimeslot/patientID`
 > returns the info of the appointment
 

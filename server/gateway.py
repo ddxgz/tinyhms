@@ -89,8 +89,9 @@ class JSONTranslator(object):
 
 
 if conf.api_version == "1":
-    from server.apiv1 import RegDoctorListener, DoctorListener, MakeAppointmentListener, \
-        AppointmentListener
+    from server.apiv1 import RegDoctorListener, DoctorListener, RegPatientListener, \
+        PatientListener, MakeAppointmentListener, AppointmentListener, \
+        AppointmentListListener
 
 # elif conf.api_version is "2":
 #     from apiv2 import HomeListener, AccountListener, \
@@ -106,14 +107,21 @@ app = falcon.API(middleware=[
 
 appointment_listener = AppointmentListener()
 make_appointment_listener = MakeAppointmentListener()
+appointment_list_listener = AppointmentListListener()
 reg_doctor_listener = RegDoctorListener()
 doctor_listener = DoctorListener()
+reg_patient_listener = RegPatientListener()
+patient_listener = PatientListener()
 
 app.add_route('/v1/appointment', make_appointment_listener)
 app.add_route('/v1/appointment/{doctorid}/{datetimeslot}/{patientid}',
                 appointment_listener)
+# app.add_route('/v1/appointment/{date}}',appointment_list_listener)
 app.add_route('/v1/doctor', reg_doctor_listener)
 app.add_route('/v1/doctor/{doctorid}', doctor_listener)
+
+app.add_route('/v1/patient', reg_patient_listener)
+app.add_route('/v1/patient/{patientid}', patient_listener)
 
 # app.add_sink(sink, r'^/v1/disk/(?P<path2file>.+?)$')
 

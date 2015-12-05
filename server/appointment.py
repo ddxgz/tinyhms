@@ -32,7 +32,7 @@ def make_appointment(post_data):
 
     # check db when patient is ok
         rediscli.set_data(
-            post_data['doctorid']+'/'+post_data['datatimeslot']+'/'+post_data['patientid'], 
+            post_data['doctorid']+'/'+post_data['datatimeslot']+'/'+post_data['patientid'],
             post_data['illness'])
 
     except Exception as ex:
@@ -68,3 +68,29 @@ def get_appointment(appointment_url):
     else:
         appointment_json = json.dumps({'illness':appointment})
         return 1, appointment_json
+
+
+def check_appointment(doctorid, date):
+    """
+    Get info of an appointment in the system.
+
+    :param appointment_url: appointment's url
+    :returns: a status, a str ( appointment's info on success, err info on failure)
+    """
+    pass
+    # print(appointment_url)
+    # info = {}
+    # try:
+    #     logger.debug('in get_appointment')
+    #     # check redis
+    #     appointment = str(rediscli.get_data(appointment_url))
+    #     logger.debug(appointment)
+    # # except UserNotExistException:
+    # #     logger.debug('in UserNotExistException')
+    # #     return 0, 'get doctor failed, the required Doctor Did Not Exist'
+    # except Exception as ex:
+    #     logger.error('Exception: ', ex)
+    #     return 0, 'get appointment failed'
+    # else:
+    #     appointment_json = json.dumps({'illness':appointment})
+    #     return 1, appointment_json
