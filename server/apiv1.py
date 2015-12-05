@@ -427,3 +427,54 @@ class AppointmentListListener:
 
     def on_delete(self, req, resp):
         pass
+
+
+class AppointmentSinkAdapter(object):
+    def __call__(self, req, resp, doctor_date):
+        """
+        :param req.header.username: the username, should be tenant:user when dev
+        :param req.header.password: password
+        :doctor_date the part in the request url /v1/disk/(?P<doctor_date>.+?), to
+            identify the resource to manipulate
+
+        :returns: a json contains correspond response info
+            GET: the temp_url of the file in a resp dict
+            PUT: the auth_token and storage_url in a resp dict for uploading file
+            DELETE: description of if the operation success or fail
+        """
+        logger.debug('in sink req.method:%s  doctor_date:%s' % (
+            req.method, doctor_date))
+        resp_dict = {}
+
+        try:
+            username = req.get_header('username') or 'un'
+            password = req.get_header('password') or 'pw'
+            req_dir = req.get_header('dir') or None
+            logger.debug('username:%s, password:%s' % (username, password))
+        except:
+            raise falcon.HTTPBadRequest('bad req',
+                'when read from req, please check if the req is correct.')
+
+        if req.method == 'GET':
+            try:
+                url_list = doctor_date.split('/')
+                if len(url_list) == 2:
+                    # check_appointment
+                    logger.debug(url_list)
+                    appointment.check_appointment(url_list[0], url_list[1])
+            except UserNotExistException:
+                logger.debug('in UserNotExistException')
+                # resp_dict['info'] = 'user:%s does not exist' % username
+                # resp.status = falcon.HTTP_404
+                # resp.body = json.dumps(resp_dict, encoding='utf-8')
+
+            except:
+                description = ('Unknown error, username and passwd ok!')
+                raise falcon.HTTPServiceUnavailable(
+                        'Service Error',
+                        description,
+                        30)
+            else:
+                resp_dict['info'] = 'doctor_date:%s ' % doctor_date
+                resp.status = falcon.HTTP_200
+                resp.body = json.dumps(resp_dict)

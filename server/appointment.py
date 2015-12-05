@@ -77,8 +77,7 @@ def check_appointment(doctorid, date):
     :param appointment_url: appointment's url
     :returns: a status, a str ( appointment's info on success, err info on failure)
     """
-    pass
-    # print(appointment_url)
+    print(doctorid, date)
     # info = {}
     # try:
     #     logger.debug('in get_appointment')

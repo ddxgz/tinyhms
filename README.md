@@ -20,13 +20,15 @@ python3 -m server.models
 python3 -m server.gateway
 ```
 
+4. Start a redis server whether local or in a docker container
+
 ### Docker to setup server
 
 The environment is organized as a docker container, locates in docker-compose/,
 just docker-compose up. The port can be changed as you like in docker-compose.yml
 
 To do this:
-1. Install docker 
+1. Install docker
 ```
 $ wget -qO- https://get.docker.com/ | sh
 ```
@@ -46,7 +48,7 @@ Configuration
 
 TODO
 ---------------
-- Need a unique employee id to avoid duplicated registration. 
+- Need a unique employee id to avoid duplicated registration.
 - use a separated user auth module (may use the swift's tempauth like method, which uses memcache to store token, set a expire time on each token, or the auth middleware <https://github.com/talons/talons>)
 - functest, probtest, unittest
 - deal with the security of password storing and transferring
@@ -68,4 +70,3 @@ Requirements
 - Falcon >= 0.3.0
 - peewee >= 2.6.1
 - Six >= 1.9
-

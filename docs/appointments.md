@@ -24,7 +24,8 @@ A patient can only have one appointment on one day. If need to modify an appoint
 >
 ```
 {
-    'doctorid':['timeslot1', 'timeslot2'],
+    '1300':'1',
+    '1430':'0',
     ...
 }
 ```
