@@ -5,6 +5,7 @@ log_level = DEBUG
 api_version = 1
 
 [model]
+test = true
 # sqlite3, mysql
 db_type = sqlite3
 # only for sqlite

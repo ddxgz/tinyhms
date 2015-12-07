@@ -11,10 +11,28 @@ from server.hmsexceptions import UserNotExistException
 
 # create a peewee database instance -- our models will use this database to
 # persist information
-if conf.db_type == 'sqlite3':
-    database = SqliteDatabase('{}.sqlite3'.format(conf.db_filename))
-elif conf.db_type == 'mysql':
-    logger.error('MySQL support is not implemented yet!')
+# if conf.db_type == 'sqlite3':
+#     database = SqliteDatabase('{}.sqlite3'.format(conf.db_filename))
+# elif conf.db_type == 'mysql':
+#     logger.error('MySQL support is not implemented yet!')
+
+
+def point_db(config):
+    if config.db_type == 'sqlite3':
+        database = SqliteDatabase('{}.sqlite3'.format(config.db_filename))
+    elif config.db_type == 'mysql':
+        logger.error('MySQL support is not implemented yet!')
+    return database
+
+def create_tables(config):
+    database = point_db(config)
+    database.connect()
+    database.create_tables([DoctorModel, PatientModel], safe=True)
+    return database
+    # database.create_tables([DoctorModel])
+
+
+database = point_db(conf)
 
 
 class BaseModel(Model):
@@ -115,7 +133,7 @@ class PatientModel(BaseModel):
     # email = CharField()
     birthdate = CharField()
     address = CharField()
-    mobile_phone = IntegerField()
+    mobile_phone = CharField()
     gender = CharField()
     height = IntegerField()
     weight = IntegerField()
@@ -183,17 +201,6 @@ class PatientModel(BaseModel):
             user_dict['accompanied_by'] = user.accompanied_by
             logger.debug('after ger user: %s' % email)
             return user_dict
-
-
-def create_tables(config):
-    if config.db_type == 'sqlite3':
-        database = SqliteDatabase('{}.sqlite3'.format(config.db_filename))
-    elif config.db_type == 'mysql':
-        logger.error('MySQL support is not implemented yet!')
-
-    database.connect()
-    database.create_tables([DoctorModel, PatientModel], safe=True)
-    # database.create_tables([DoctorModel])
 
 
 if __name__ == '__main__':

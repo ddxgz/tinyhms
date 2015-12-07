@@ -35,8 +35,7 @@ def make_appointment(post_data):
     # check db when patient is ok
         rediscli.set_data(
             post_data['doctorid']+'/'+post_data['datetimeslot']+'/'+
-                post_data['patientid'],
-            post_data['illness'])
+                post_data['patientid'], post_data)
         schedule = rediscli.get_data(post_data['doctorid']+'/'+
             post_data['datetimeslot'][:8])
         if schedule:
@@ -46,6 +45,7 @@ def make_appointment(post_data):
                 json.dumps(schedule))
         else:
             schedule = {post_data['datetimeslot'][8:]:'1'}
+            logger.debug('in make_appointment, schedule:{}'.format(json.dumps(schedule)))
             rediscli.set_data(post_data['doctorid']+'/'+post_data['datetimeslot'][:8],
                 json.dumps(schedule))
 

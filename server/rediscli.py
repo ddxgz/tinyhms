@@ -25,9 +25,13 @@ def get_data(addr):
     # pipe = r.pipeline()
     # pipe.get(addr)
     # pipe.execute()
-    data = r.get(addr).decode('utf-8')
-    logger.debug('redis get_data, data:{}, type:{}'.format(data, type(data)))
-    return data
+    bdata = r.get(addr)
+    if bdata:
+        return bdata.decode('utf-8')
+    else:
+        return bdata
+    # logger.debug('redis get_data, data:{}, type:{}'.format(data, type(data)))
+    # return data
 
 
 
