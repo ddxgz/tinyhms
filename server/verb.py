@@ -25,7 +25,7 @@ headers = { 'username':'user1',
 #         }
 data = {
     'doctorid':'d001',
-    'datatimeslot':'201511201300',
+    'datetimeslot':'201511201400',
     'patientid':'p001',
     'illness': 'illness01',
 }
@@ -50,6 +50,10 @@ if __name__ == '__main__':
     elif len(sys.argv) == 2:
         docidtimepaid = sys.argv[1]
         print(visit.get(suffix_url='appointment/{}'.format(docidtimepaid), headers=headers))
+    # elif len(sys.argv) == 2:
+    #     docidtime = sys.argv[1]
+    #     print(visit.get(suffix_url='appointment/{}'.format(docidtime), headers=headers))
+
 
     # if len(sys.argv) == 1:
     #     print(visit.post(suffix_url='patient',

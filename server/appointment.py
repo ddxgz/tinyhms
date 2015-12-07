@@ -1,4 +1,5 @@
 import json
+import ast
 
 from server.models import database, DoctorModel
 from server import rediscli
@@ -23,6 +24,7 @@ def make_appointment(post_data):
     1. check if patient and doctor exist in db
     2. check if the appointment exist in redis
     3. make appointment if 1 and 2 ok
+    3.2 add the appointment to the doctor's that day's schedule
     4. return if appointment exists, with reason if fail
 
     """
@@ -32,8 +34,20 @@ def make_appointment(post_data):
 
     # check db when patient is ok
         rediscli.set_data(
-            post_data['doctorid']+'/'+post_data['datatimeslot']+'/'+post_data['patientid'],
+            post_data['doctorid']+'/'+post_data['datetimeslot']+'/'+
+                post_data['patientid'],
             post_data['illness'])
+        schedule = rediscli.get_data(post_data['doctorid']+'/'+
+            post_data['datetimeslot'][:8])
+        if schedule:
+            schedule = ast.literal_eval(schedule)
+            schedule[post_data['datetimeslot'][8:]] = '1'
+            rediscli.set_data(post_data['doctorid']+'/'+post_data['datetimeslot'][:8],
+                json.dumps(schedule))
+        else:
+            schedule = {post_data['datetimeslot'][8:]:'1'}
+            rediscli.set_data(post_data['doctorid']+'/'+post_data['datetimeslot'][:8],
+                json.dumps(schedule))
 
     except Exception as ex:
         logger.error('Exception: ', ex)
@@ -42,7 +56,8 @@ def make_appointment(post_data):
         return 0, 'make_appointment failed, did not make_appointment'
 
     else:
-        return 1, str(post_data['doctorid']+'/'+post_data['datatimeslot']+'/'+post_data['patientid'])
+        return 1, str(post_data['doctorid']+'/'+post_data['datetimeslot']+'/'+
+                        post_data['patientid'])
 
 
 def get_appointment(appointment_url):
@@ -72,24 +87,26 @@ def get_appointment(appointment_url):
 
 def check_appointment(doctorid, date):
     """
-    Get info of an appointment in the system.
+    Get info of appointments for a doctor on a date in the system.
 
     :param appointment_url: appointment's url
-    :returns: a status, a str ( appointment's info on success, err info on failure)
+    :returns: a status, a str ( appointments timeslots info on success,
+                                    err info on failure)
     """
     print(doctorid, date)
     # info = {}
-    # try:
-    #     logger.debug('in get_appointment')
-    #     # check redis
-    #     appointment = str(rediscli.get_data(appointment_url))
-    #     logger.debug(appointment)
-    # # except UserNotExistException:
-    # #     logger.debug('in UserNotExistException')
-    # #     return 0, 'get doctor failed, the required Doctor Did Not Exist'
-    # except Exception as ex:
-    #     logger.error('Exception: ', ex)
-    #     return 0, 'get appointment failed'
-    # else:
-    #     appointment_json = json.dumps({'illness':appointment})
-    #     return 1, appointment_json
+    try:
+        logger.debug('in check_appointment')
+        schedule = rediscli.get_data(doctorid+'/'+date)
+    except Exception as ex:
+        logger.error('Exception: ', ex)
+        return 0, 'check_appointment failed'
+    else:
+        logger.debug('in check_appointment schedule data:{}'.format(schedule))
+        if schedule:
+            logger.debug('in check_appointment schedule data:{}'.format(schedule))
+            # appointments_json = json.dumps(schedule)
+            return 1, schedule
+        # no appointment for this doctor on this date
+        else:
+            return 1, '{}'

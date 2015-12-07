@@ -286,23 +286,23 @@ class MakeAppointmentListener:
         except Exception as ex:
             logger.exception('error when Make an appointment, ', ex)
             resp_dict['info'] = 'Error when Make an appointment {}'.format(
-                post_data['doctorid']+post_data['patientid']+post_data['datatimeslot'])
+                post_data['doctorid']+post_data['patientid']+post_data['datetimeslot'])
             resp.status = falcon.HTTP_500
             resp.body = json.dumps(resp_dict, sort_keys=True, indent=4)
         else:
             if status:
                 logger.debug('make appointment ok, status positive')
                 resp_dict['info'] = 'make appointment {} success'.format(
-                    post_data['doctorid']+post_data['patientid']+post_data['datatimeslot'])
+                    post_data['doctorid']+post_data['patientid']+post_data['datetimeslot'])
                 resp_dict['appointment_url'] = appointment_url
                 # resp.status = status or falcon.HTTP_200
                 resp.status = falcon.HTTP_200
                 resp.body = json.dumps(resp_dict,
                     sort_keys=True, indent=4)
             else:
-                logger.exception('return error when try to make appointment, ', ex)
+                logger.error('return error when try to make appointment')
                 resp_dict['errinfo'] = 'Error when make appointment {}'.format(
-                    post_data['doctorid']+post_data['patientid']+post_data['datatimeslot'])
+                    post_data['doctorid']+post_data['patientid']+post_data['datetimeslot'])
                 resp.status = falcon.HTTP_400
                 resp.body = json.dumps(resp_dict)
 
@@ -461,9 +461,11 @@ class AppointmentSinkAdapter(object):
                 if len(url_list) == 2:
                     # check_appointment
                     logger.debug(url_list)
-                    appointment.check_appointment(url_list[0], url_list[1])
-            except UserNotExistException:
-                logger.debug('in UserNotExistException')
+                    status, schedule = appointment.check_appointment(url_list[0], url_list[1])
+                    logger.debug('in sink schedule data:{}'.format(schedule))
+
+            # except UserNotExistException:
+                # logger.debug('in UserNotExistException')
                 # resp_dict['info'] = 'user:%s does not exist' % username
                 # resp.status = falcon.HTTP_404
                 # resp.body = json.dumps(resp_dict, encoding='utf-8')
@@ -475,6 +477,16 @@ class AppointmentSinkAdapter(object):
                         description,
                         30)
             else:
-                resp_dict['info'] = 'doctor_date:%s ' % doctor_date
-                resp.status = falcon.HTTP_200
-                resp.body = json.dumps(resp_dict)
+                # resp_dict['info'] = 'doctor_date:%s ' % doctor_date
+
+                if status:
+                    logger.debug('get ok, status positive')
+                    resp.status = falcon.HTTP_200
+                    resp.body = schedule
+                else:
+                    logger.exception('return error when try to get appointment_info')
+                    resp_dict['info'] = 'Error when get appointment_info {}'.format(
+                        apmt_url)
+                    resp.status = falcon.HTTP_400
+                    resp.body = json.dumps(resp_dict, sort_keys=True,
+                        indent=4)

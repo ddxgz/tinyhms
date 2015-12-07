@@ -8,7 +8,7 @@ A patient can only have one appointment on one day. If need to modify an appoint
 ```
 {
     'doctorid':'d001',
-    'datatimeslot':'201511201300',
+    'datetimeslot':'201511201300',
     'patientid':'p001',
     'illness': 'xxx',
 }
