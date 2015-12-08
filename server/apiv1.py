@@ -131,8 +131,63 @@ class DoctorListener:
                 resp.status = falcon.HTTP_400
                 resp.body = json.dumps(resp_dict)
 
-    def on_put(self, req, resp):
-        pass
+    @falcon.before(max_body(64*1024))
+    def on_put(self, req, resp, doctorid):
+        """
+        Edit a doctor in the system. The PUT data is in json format.
+
+        :param req.header.username: username
+        :param req.header.password: password
+        :returns: a json contains doctor's id, or other related info
+                {"doctorid":'d001', "info":{"info1":''}}
+        """
+        resp_dict = {}
+        logger.debug('in doctor put')
+
+        try:
+            username = req.get_header('username') or 'un'
+            password = req.get_header('password') or 'pw'
+            # post_data = req.params.get('data')
+            # have pre-processed by JSONTranslator, post_data is a dict
+            logger.debug('in doctor put, before got post_data')
+
+            post_data = req.context['doc']
+            # logger.debug('username:%s, password:%s, data:%s'
+            #     % (username, password, post_data))
+            # logger.debug('env:%s , \nstream:%s, \ncontext:, \ninput:' % (
+            #     req.env, req.stream.read()))
+        except Exception as ex:
+            logger.error('error when try to get headers and data, ', ex)
+            raise falcon.HTTPBadRequest('bad req',
+                'when read from req, please check if the req is correct.')
+        try:
+            """
+            handle_request:
+
+            """
+            status, doctorid = doctor.edit_doctor(doctorid, post_data)
+
+        except Exception as ex:
+            logger.exception('error when register doctor, ', ex)
+            resp_dict['info'] = 'Error when register doctor {}'.format(
+                doctorid)
+            resp.status = falcon.HTTP_500
+            resp.body = json.dumps(resp_dict, sort_keys=True, indent=4)
+        else:
+            if status:
+                logger.debug('Edit ok, status positive')
+                resp_dict['info'] = 'Edit doctor {} success'.format(
+                    doctorid)
+                resp_dict['doctorid'] = doctorid
+                # resp.status = status or falcon.HTTP_200
+                resp.status = falcon.HTTP_200
+                resp.body = json.dumps(resp_dict)
+            else:
+                logger.exception('return error when try to Edit doctor, ', ex)
+                resp_dict['errinfo'] = 'Error when Edit doctor {}'.format(
+                    doctorid)
+                resp.status = falcon.HTTP_400
+                resp.body = json.dumps(resp_dict)
 
     def on_delete(self, req, resp):
         pass

@@ -42,6 +42,12 @@ class VisitPy2():
         return code, page
 
     def put(self, suffix_url='', headers=None, data=None):
+        if isinstance(data, dict):
+            logger.debug('data is dict')
+            data=json.dumps(data)
+        elif isinstance(data, str):
+            logger.debug('data is str')
+            
         req = urllib2.Request(self.baseurl+self._rslash(suffix_url),
             headers=headers,
             data=data)

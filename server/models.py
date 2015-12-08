@@ -103,6 +103,19 @@ class DoctorModel(BaseModel):
             logger.debug('after ger user: %s' % email)
             return user_dict
 
+    @classmethod
+    def update_by_dict(cls, email, post_data):
+        user = DoctorModel.get(DoctorModel.email==email)
+        with database.atomic():
+            q = DoctorModel.update(
+                firstname=post_data.get('firstname', user.firstname),
+                lastname=post_data.get('lastname', user.lastname),
+                qualification=post_data.get('qualification', user.qualification),
+                profession=post_data.get('profession', user.profession),
+                experience=int(post_data.get('experience', user.experience)),
+                gender=post_data.get('gender', user.gender),
+                ).where(DoctorModel.email==email)
+            q.execute()
 
 
 class PatientModel(BaseModel):

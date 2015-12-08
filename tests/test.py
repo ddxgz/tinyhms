@@ -4,7 +4,7 @@ import uuid
 import ast
 import time
 
-from server.doctor import register_doctor, get_doctor
+from server.doctor import register_doctor, get_doctor, edit_doctor
 from server.patient import register_patient, get_patient
 from server.appointment import make_appointment, get_appointment, check_appointment
 from server.models import create_tables, DoctorModel, PatientModel
@@ -58,6 +58,41 @@ class DoctorTest(unittest.TestCase):
         self.assertTrue(status)
         self.assertIn(doctorid, doctorinfo)
         self.assertIn('10', doctorinfo)
+
+    def test_edit_doctor(self):
+        doctorid = '{}@hms.com'.format(str(uuid.uuid4()))
+        data = {
+                'email':doctorid,
+                'firstname':'aaa',
+                'lastname':'bbb',
+                'experience':'10',
+                'profession':'profession1',
+                'qualification':'qualification1',
+                'gender':'gender1'
+                }
+        status, did = register_doctor(data)
+
+        self.assertTrue(status)
+
+        doctor = DoctorModel.get(DoctorModel.email==doctorid)
+        self.assertEqual(10, doctor.experience)
+        self.assertEqual('profession1', doctor.profession)
+        self.assertEqual('qualification1', doctor.qualification)
+        self.assertEqual('gender1', doctor.gender)
+
+        data2 = {
+                'experience':'20',
+                'profession':'profession2',
+                'qualification':'qualification2',
+                'gender':'gender2'
+                }
+        status2, did = edit_doctor(doctorid, data2)
+        doctor2 = DoctorModel.get(DoctorModel.email==doctorid)
+        self.assertTrue(status2)
+        self.assertEqual(20, doctor2.experience)
+        self.assertEqual('profession2', doctor2.profession)
+        self.assertEqual('qualification2', doctor2.qualification)
+        self.assertEqual('gender2', doctor2.gender)
 
 
 class PatientTest(unittest.TestCase):

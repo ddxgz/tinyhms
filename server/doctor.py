@@ -7,12 +7,12 @@ from server.utils import logger
 
 def register_doctor(post_data):
     """
-    Register a doctor in the system. The post data is in json format.
+    Register a doctor in the system. The post data is a dict.
 
     :param post_data: dict
     :returns: a status, a str( doctor's info on success, err info on failure)
     """
-    print(post_data)
+    # print(post_data)
     doctor = ''
     try:
         logger.debug('in register_doctor')
@@ -45,6 +45,39 @@ def register_doctor(post_data):
         return 1, str(doctor)
 
 
+def edit_doctor(doctorid, post_data):
+    """
+    Edit a doctor in the system. The post data is a dict.
+
+    :param post_data: dict
+    :returns: a status, a str( doctor's info on success, err info on failure)
+    """
+    # print(post_data)
+    try:
+        logger.debug('in edit_doctor')
+        DoctorModel.update_by_dict(doctorid, post_data)
+        logger.debug('executed')
+    # except peewee.IntegrityError:
+    #     logger.warning('in doctor model create except')
+
+        # # `username` is a unique column, so this username already exists,
+        # # making it safe to call .get().
+        # old_user = AccountModel.get(AccountModel.username == username)
+        # logger.warning('user exists...')
+        # resp_dict['info'] = 'user exists, did not create user:%s' % username
+        # resp.status = falcon.HTTP_409
+        # try:
+        #     change_user = AccountModel.get(AccountModel.username==username,
+        #                     AccountModel.password==password)
+        # except:
+        #     logger.debug('change user data failed...')
+    except Exception as ex:
+        logger.error('Exception: ', ex)
+        return 0, 'edit_doctor failed, did not edit doctor'
+    else:
+        return 1, str(doctorid)
+
+
 def get_doctor(doctorid):
     """
     Get info of a doctor in the system.
@@ -52,7 +85,7 @@ def get_doctor(doctorid):
     :param doctorid: doctor's uid
     :returns: a status, a str ( doctor's info on success, err info on failure)
     """
-    print(doctorid)
+    # print(doctorid)
     info = {}
     try:
         logger.debug('in get_doctor')
