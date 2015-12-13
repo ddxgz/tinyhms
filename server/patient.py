@@ -44,6 +44,39 @@ def register_patient(post_data):
         return 1, str(patient)
 
 
+def edit_patient(patientid, post_data):
+    """
+    Edit a patient in the system. The post data is a dict.
+
+    :param post_data: dict
+    :returns: a status, a str( patient's info on success, err info on failure)
+    """
+    # print(post_data)
+    try:
+        logger.debug('in edit_patient')
+        PatientModel.update_by_dict(patientid, post_data)
+        logger.debug('executed')
+    # except peewee.IntegrityError:
+    #     logger.warning('in doctor model create except')
+
+        # # `username` is a unique column, so this username already exists,
+        # # making it safe to call .get().
+        # old_user = AccountModel.get(AccountModel.username == username)
+        # logger.warning('user exists...')
+        # resp_dict['info'] = 'user exists, did not create user:%s' % username
+        # resp.status = falcon.HTTP_409
+        # try:
+        #     change_user = AccountModel.get(AccountModel.username==username,
+        #                     AccountModel.password==password)
+        # except:
+        #     logger.debug('change user data failed...')
+    except Exception as ex:
+        logger.error('Exception: ', ex)
+        return 0, 'edit_patient failed, did not edit_patient'
+    else:
+        return 1, str(patientid)
+
+
 def get_patient(patientid):
     """
     Get info of a patient in the system.

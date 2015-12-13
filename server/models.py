@@ -216,5 +216,20 @@ class PatientModel(BaseModel):
             return user_dict
 
 
+    @classmethod
+    def update_by_dict(cls, email, post_data):
+        user = PatientModel.get(PatientModel.email==email)
+        with database.atomic():
+            q = PatientModel.update(
+                firstname=post_data.get('firstname', user.firstname),
+                lastname=post_data.get('lastname', user.lastname),
+                qualification=post_data.get('qualification', user.qualification),
+                profession=post_data.get('profession', user.profession),
+                experience=int(post_data.get('experience', user.experience)),
+                gender=post_data.get('gender', user.gender),
+                ).where(PatientModel.email==email)
+            q.execute()
+
+
 if __name__ == '__main__':
     create_tables(conf)

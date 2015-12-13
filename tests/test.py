@@ -108,7 +108,7 @@ class PatientTest(unittest.TestCase):
         # db point to testdb when db point works ok
         # os.remove('{}.sqlite3'.format('hms'))
 
-    def test_register_doctor(self):
+    def test_register_patient(self):
         patientid = '{}@hms.com'.format(str(uuid.uuid4()))
         data = {
                 'email':patientid,
@@ -127,7 +127,7 @@ class PatientTest(unittest.TestCase):
         self.assertEqual('19601010', patient.birthdate)
 
 
-    def test_get_doctor(self):
+    def test_get_patient(self):
         patientid = '{}@hms.com'.format(str(uuid.uuid4()))
         data = {
                 'email':patientid,
