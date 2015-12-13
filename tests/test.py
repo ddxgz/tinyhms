@@ -5,7 +5,7 @@ import ast
 import time
 
 from server.doctor import register_doctor, get_doctor, edit_doctor
-from server.patient import register_patient, get_patient
+from server.patient import register_patient, get_patient, edit_patient
 from server.appointment import make_appointment, get_appointment, check_appointment
 from server.models import create_tables, DoctorModel, PatientModel
 from server import rediscli
@@ -142,6 +142,59 @@ class PatientTest(unittest.TestCase):
         self.assertIn(patientid, patientinfo)
         self.assertIn('19601010', patientinfo)
 
+    def test_edit_patient(self):
+        """
+            email = CharField(max_length=100, unique=True)
+            firstname = CharField(max_length=100)
+            lastname = CharField(max_length=100)
+            # email = CharField()
+            birthdate = CharField()
+            address = CharField()
+            mobile_phone = CharField()
+            gender = CharField()
+            height = IntegerField()
+            weight = IntegerField()
+            blood_group = CharField()
+            occupation = CharField()
+            marriage = CharField()
+            reference = CharField(max_length=100)
+            doctor_in_charge = CharField()
+            allergy = CharField()
+            accompanied_by = CharField()
+        """
+        patientid = '{}@hms.com'.format(str(uuid.uuid4()))
+        data = {
+                'email':patientid,
+                'firstname':'aaa',
+                'lastname':'bbb',
+                'birthdate':'19881010',
+                'mobile_phone':'0717771717',
+                'height':100,
+                'doctor_in_charge':'d1'
+                }
+        status, patientid = register_patient(data)
+
+        self.assertTrue(status)
+
+        patient = PatientModel.get(PatientModel.email==patientid)
+        self.assertEqual('19881010', patient.birthdate)
+        self.assertEqual('0717771717', patient.mobile_phone)
+        self.assertEqual(100, patient.height)
+        self.assertEqual('d1', patient.doctor_in_charge)
+
+        data2 = {
+                'birthdate':'19981010',
+                'mobile_phone':'0717771799',
+                'height':120,
+                'doctor_in_charge':'d2'
+                }
+        status2, pid = edit_patient(patientid, data2)
+        patient2 = PatientModel.get(PatientModel.email==patientid)
+        self.assertTrue(status2)
+        self.assertEqual('19981010', patient2.birthdate)
+        self.assertEqual('0717771799', patient2.mobile_phone)
+        self.assertEqual(120, patient2.height)
+        self.assertEqual('d2', patient2.doctor_in_charge)
 
 
 class AppointmentTest(unittest.TestCase):

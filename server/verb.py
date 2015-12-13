@@ -17,12 +17,12 @@ headers = { 'username':'user1',
 #             'to':'user1@email.com' }
 #         }"""
 #
-data = {
-       'email': 'a@b.com',
-        'firstname':'aaa',
-        'lastname':'bbb',
-        'experience':'10'
-        }
+# data = {
+#        'email': 'a@b.com',
+#         'firstname':'aaa',
+#         'lastname':'bbb',
+#         'experience':'10'
+#         }
 # data = {
 #     'doctorid':'d001',
 #     'datetimeslot':'201511201400',
@@ -30,28 +30,28 @@ data = {
 #     'illness': 'illness01',
 # }
 # #
-# data = {
-#         'email': 'a@b.com',
-#         'firstname':'aaa',
-#         'lastname':'bbb',
-#         'birthdate':'20151111'
-#         }
+data = {
+        'email': 'a@b.com',
+        'firstname':'aaa',
+        'lastname':'bbb',
+        'birthdate':'20151111'
+        }
 
 if __name__ == '__main__':
-    if len(sys.argv) == 1:
-        print(visit.post(suffix_url='doctor',
-            headers=headers, data=data))
-    elif len(sys.argv) == 2:
-        uid = sys.argv[1]
-        print(visit.get(suffix_url='doctor/{}'.format(uid), headers=headers))
-        data2 = {
-                'firstname':'ccc',
-                'lastname':'ddd',
-                'experience':20
-                }
-        print(visit.put(suffix_url='doctor/{}'.format(uid),
-                    headers=headers, data=data2))
-        print(visit.get(suffix_url='doctor/{}'.format(uid), headers=headers))
+    # if len(sys.argv) == 1:
+    #     print(visit.post(suffix_url='doctor',
+    #         headers=headers, data=data))
+    # elif len(sys.argv) == 2:
+    #     uid = sys.argv[1]
+    #     print(visit.get(suffix_url='doctor/{}'.format(uid), headers=headers))
+    #     data2 = {
+    #             'firstname':'ccc',
+    #             'lastname':'ddd',
+    #             'experience':20
+    #             }
+    #     print(visit.put(suffix_url='doctor/{}'.format(uid),
+    #                 headers=headers, data=data2))
+    #     print(visit.get(suffix_url='doctor/{}'.format(uid), headers=headers))
 
     # if len(sys.argv) == 1:
     #     print(visit.post(suffix_url='appointment',
@@ -64,9 +64,17 @@ if __name__ == '__main__':
     #     print(visit.get(suffix_url='appointment/{}'.format(docidtime), headers=headers))
 
 
-    # if len(sys.argv) == 1:
-    #     print(visit.post(suffix_url='patient',
-    #         headers=headers, data=data))
-    # elif len(sys.argv) == 2:
-    #     uid = sys.argv[1]
-    #     print(visit.get(suffix_url='patient/{}'.format(uid), headers=headers))
+    if len(sys.argv) == 1:
+        print(visit.post(suffix_url='patient',
+            headers=headers, data=data))
+    elif len(sys.argv) == 2:
+        uid = sys.argv[1]
+        print(visit.get(suffix_url='patient/{}'.format(uid), headers=headers))
+        data2 = {
+                'firstname':'ccc',
+                'lastname':'ddd',
+                'birthdate':'19999999'
+                }
+        print(visit.put(suffix_url='patient/{}'.format(uid),
+                    headers=headers, data=data2))
+        print(visit.get(suffix_url='patient/{}'.format(uid), headers=headers))

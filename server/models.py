@@ -173,7 +173,7 @@ class PatientModel(BaseModel):
             birthdate = post_data.get('birthdate', '2015'),
             email = post_data.get('email', 'no'),
             address = post_data.get('address', 'add'),
-            mobile_phone = post_data.get('moblie_phone', 138),
+            mobile_phone = post_data.get('mobile_phone', 138),
             blood_group = post_data.get('blood_group', 'a'),
             gender = post_data.get('gender', 'm'),
             height = post_data.get('height', 170),
@@ -223,10 +223,19 @@ class PatientModel(BaseModel):
             q = PatientModel.update(
                 firstname=post_data.get('firstname', user.firstname),
                 lastname=post_data.get('lastname', user.lastname),
-                qualification=post_data.get('qualification', user.qualification),
-                profession=post_data.get('profession', user.profession),
-                experience=int(post_data.get('experience', user.experience)),
                 gender=post_data.get('gender', user.gender),
+                birthdate = post_data.get('birthdate', user.birthdate),
+                address = post_data.get('address', user.address),
+                mobile_phone = post_data.get('mobile_phone', user.mobile_phone),
+                blood_group = post_data.get('blood_group', user.blood_group),
+                height = int(post_data.get('height', user.height)),
+                weight = int(post_data.get('weight', user.weight)),
+                occupation = post_data.get('occupation', user.occupation),
+                marriage = post_data.get('marriage', user.marriage),
+                reference = post_data.get('reference', user.reference),
+                doctor_in_charge = post_data.get('doctor_in_charge', user.doctor_in_charge),
+                allergy = post_data.get('allergy', user.allergy),
+                accompanied_by = post_data.get('accompanied_by', user.accompanied_by),
                 ).where(PatientModel.email==email)
             q.execute()
 
