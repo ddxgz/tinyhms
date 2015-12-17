@@ -48,6 +48,7 @@ Configuration
 
 TODO
 ---------------
+- Filter characters like space and other unwanted characters from requests data
 - Encryption auth data
 - Need a unique employee id to avoid duplicated registration.
 - use a separated user auth module (may use the swift's tempauth like method, which uses memcache to store token, set a expire time on each token, or the auth middleware <https://github.com/talons/talons>)

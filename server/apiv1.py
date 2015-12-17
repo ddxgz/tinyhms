@@ -238,7 +238,7 @@ class RegPatientListener:
                 logger.debug('register ok, status positive')
                 resp_dict['info'] = 'Register patient {} success'.format(
                     post_data['lastname'])
-                resp_dict['doctorid'] = patientid
+                resp_dict['patientid'] = patientid
                 # resp.status = status or falcon.HTTP_200
                 resp.status = falcon.HTTP_200
                 resp.body = json.dumps(resp_dict)

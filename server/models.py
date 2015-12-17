@@ -74,7 +74,9 @@ class DoctorModel(BaseModel):
             # uid=str(uuid.uuid4()),
             firstname=post_data.get('firstname'),
             lastname=post_data.get('lastname'),
-            email=post_data.get('email'),
+            # change after dev
+            email=post_data.get('email', '{}@hms.com'.format(
+                post_data.get('firstname')+post_data.get('lastname'))),
             qualification=post_data.get('qualification', 'q'),
             profession=post_data.get('profession', 'p'),
             # need a better solution
@@ -148,8 +150,10 @@ class PatientModel(BaseModel):
     address = CharField()
     mobile_phone = CharField()
     gender = CharField()
-    height = IntegerField()
-    weight = IntegerField()
+    # height = IntegerField()
+    # weight = IntegerField()
+    height = CharField()
+    weight = CharField()
     blood_group = CharField()
     occupation = CharField()
     marriage = CharField()
@@ -173,11 +177,11 @@ class PatientModel(BaseModel):
             birthdate = post_data.get('birthdate', '2015'),
             email = post_data.get('email', 'no'),
             address = post_data.get('address', 'add'),
-            mobile_phone = post_data.get('mobile_phone', 138),
+            mobile_phone = post_data.get('mobile_phone', '138'),
             blood_group = post_data.get('blood_group', 'a'),
             gender = post_data.get('gender', 'm'),
-            height = post_data.get('height', 170),
-            weight = post_data.get('weight', 180),
+            height = post_data.get('height', '170'),
+            weight = post_data.get('weight', '180'),
             occupation = post_data.get('occupation', '111'),
             marriage = post_data.get('marriage', 'y'),
             reference = post_data.get('reference', '1'),
@@ -188,7 +192,7 @@ class PatientModel(BaseModel):
 
     @classmethod
     def get_dict(cls, email):
-        logger.debug('in PatientModel.get_dict ')
+        logger.debug('in PatientModel.get_dict:{} '.format(email))
         user_dict = {}
         try:
             user = PatientModel.get(PatientModel.email==email)
@@ -228,8 +232,10 @@ class PatientModel(BaseModel):
                 address = post_data.get('address', user.address),
                 mobile_phone = post_data.get('mobile_phone', user.mobile_phone),
                 blood_group = post_data.get('blood_group', user.blood_group),
-                height = int(post_data.get('height', user.height)),
-                weight = int(post_data.get('weight', user.weight)),
+                # height = int(post_data.get('height', user.height)),
+                # weight = int(post_data.get('weight', user.weight)),
+                height = post_data.get('height', user.height),
+                weight = post_data.get('weight', user.weight),
                 occupation = post_data.get('occupation', user.occupation),
                 marriage = post_data.get('marriage', user.marriage),
                 reference = post_data.get('reference', user.reference),
