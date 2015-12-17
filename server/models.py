@@ -1,7 +1,8 @@
 import datetime
 import uuid
 
-from peewee import SqliteDatabase, Model, CharField, BooleanField, IntegerField
+from peewee import SqliteDatabase, Model, CharField, BooleanField, IntegerField, \
+    TextField
 
 from server.config import conf
 from server.utils import logger
@@ -244,6 +245,23 @@ class PatientModel(BaseModel):
                 accompanied_by = post_data.get('accompanied_by', user.accompanied_by),
                 ).where(PatientModel.email==email)
             q.execute()
+
+
+class ObjectModel(BaseModel):
+    """
+
+    """
+    patient = models.ForeignKey(PatientModel)
+
+    objid = CharField(unique=True)
+    description = TextField()
+    datetime = CharField(max_length=100)
+
+    class Meta:
+        order_by = ('objid',)
+
+    def __str__(self):
+        return self.patient + '/' + self.objid
 
 
 if __name__ == '__main__':
