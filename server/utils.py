@@ -12,6 +12,7 @@ try:
 except:
     from config import conf
 
+
 def advance_logger(loglevel):
     def get_line_number():
         return inspect.currentframe().f_back.f_back.f_lineno

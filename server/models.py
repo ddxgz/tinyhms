@@ -2,7 +2,7 @@ import datetime
 import uuid
 
 from peewee import SqliteDatabase, Model, CharField, BooleanField, IntegerField, \
-    TextField
+    TextField, ForeignKeyField
 
 from server.config import conf
 from server.utils import logger
@@ -28,7 +28,7 @@ def point_db(config):
 def create_tables(config):
     database = point_db(config)
     database.connect()
-    database.create_tables([DoctorModel, PatientModel], safe=True)
+    database.create_tables([DoctorModel, PatientModel, ObjectModel], safe=True)
     return database
     # database.create_tables([DoctorModel])
 
@@ -251,7 +251,7 @@ class ObjectModel(BaseModel):
     """
 
     """
-    patient = models.ForeignKey(PatientModel)
+    patient = ForeignKeyField(PatientModel)
 
     objid = CharField(unique=True)
     description = TextField()
@@ -261,7 +261,20 @@ class ObjectModel(BaseModel):
         order_by = ('objid',)
 
     def __str__(self):
-        return self.patient + '/' + self.objid
+        return str(self.patient) + '/' + self.objid
+
+    @classmethod
+    def create_by_dict(cls, patientid, post_data):
+        user = PatientModel.get(PatientModel.email==patientid)
+        logger.debug(type(datetime.datetime.now().strftime('%Y%m%d%H%M%S')))
+        return ObjectModel.create(
+            # uid=str(uuid.uuid4()),
+            patient=user,
+            objid=post_data.get('objname')+ '-' + post_data['datetime'],
+
+            description=post_data.get('description', 'p'),
+            datetime=post_data.get('datetime', datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
+            )
 
 
 if __name__ == '__main__':

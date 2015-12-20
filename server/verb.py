@@ -37,6 +37,8 @@ data = {
         'birthdate':'20151111'
         }
 
+
+
 if __name__ == '__main__':
     # if len(sys.argv) == 1:
     #     print(visit.post(suffix_url='doctor',
@@ -63,18 +65,34 @@ if __name__ == '__main__':
     #     docidtime = sys.argv[1]
     #     print(visit.get(suffix_url='appointment/{}'.format(docidtime), headers=headers))
 
+    # if len(sys.argv) == 1:
+    #     print(visit.post(suffix_url='patient',
+    #         headers=headers, data=data))
+    # elif len(sys.argv) == 2:
+    #     uid = sys.argv[1]
+    #     print(visit.get(suffix_url='patient/{}'.format(uid), headers=headers))
+    #     data2 = {
+    #             'firstname':'ccc',
+    #             'lastname':'ddd',
+    #             'birthdate':'19999999'
+    #             }
+    #     print(visit.put(suffix_url='patient/{}'.format(uid),
+    #                 headers=headers, data=data2))
+    #     print(visit.get(suffix_url='patient/{}'.format(uid), headers=headers))
 
     if len(sys.argv) == 1:
         print(visit.post(suffix_url='patient',
             headers=headers, data=data))
     elif len(sys.argv) == 2:
         uid = sys.argv[1]
-        print(visit.get(suffix_url='patient/{}'.format(uid), headers=headers))
-        data2 = {
-                'firstname':'ccc',
-                'lastname':'ddd',
-                'birthdate':'19999999'
+        odata = {
+                    "objname": 'objectname2',
+                    "datetime": "201511201300",
+                    "description": "x-ray"
                 }
-        print(visit.put(suffix_url='patient/{}'.format(uid),
-                    headers=headers, data=data2))
-        print(visit.get(suffix_url='patient/{}'.format(uid), headers=headers))
+        print(visit.post(suffix_url='obj/{}'.format(uid), headers=headers, data=odata))
+
+
+        print(visit.get(suffix_url='obj/{}/{}'.format(uid, odata['objname']+'-'+odata['datetime']),
+                    headers=headers))
+        # print(visit.get(suffix_url='patient/{}'.format(uid), headers=headers))

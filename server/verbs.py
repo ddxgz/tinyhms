@@ -9,12 +9,13 @@ import time
 import json
 # import asyncio
 
-from utils import logger
-# logging.basicConfig(format='===========%(levelname)s:%(message)s=========',
-#     level=logging.DEBUG)
-# logging.basicConfig(level=logging.DEBUG,
-#                 format='\n[%(levelname)s] %(message)s [%(filename)s][line:%(lineno)d] %(asctime)s ',
-#                 datefmt='%d %b %Y %H:%M:%S')
+# from utils import logger
+
+
+logging.basicConfig(level=logging.DEBUG,
+                format='[%(levelname)s] %(message)s [%(filename)s][line:%(lineno)d] %(asctime)s ',
+                datefmt='%d %b %Y %H:%M:%S')
+
 
 """
 requests doc:
@@ -43,11 +44,11 @@ class VisitPy2():
 
     def put(self, suffix_url='', headers=None, data=None):
         if isinstance(data, dict):
-            logger.debug('data is dict')
+            logging.debug('data is dict')
             data=json.dumps(data)
         elif isinstance(data, str):
-            logger.debug('data is str')
-            
+            logging.debug('data is str')
+
         req = urllib2.Request(self.baseurl+self._rslash(suffix_url),
             headers=headers,
             data=data)
@@ -87,17 +88,17 @@ class VisitPy2():
 
     def _requests_post(self, suffix_url='', headers=None, data=None):
         if isinstance(data, dict):
-            logger.debug('data is dict')
+            logging.debug('data is dict')
             resp = requests.post(self.baseurl+self._rslash(suffix_url),
                 headers=headers, data=json.dumps(data))
         elif isinstance(data, str):
-            logger.debug('data is dict')
+            logging.debug('data is dict')
             resp = requests.post(self.baseurl+self._rslash(suffix_url),
                 headers=headers, json=data)
         # page = resp.headers
         page = resp.text
         code = resp.status_code
-        logging.debug('put_resp:{}, code:{}'.format(page, code))
+        logging.debug('post_resp:{}, code:{}'.format(page, code))
         return code, page
 
 

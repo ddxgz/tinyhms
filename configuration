@@ -3,5 +3,24 @@
 #log_filename = log
 log_level = DEBUG
 api_version = 1
+redis_ip = 127.0.0.1
 
 [model]
+# sqlite3, mysql
+db_type = sqlite3
+# only for sqlite
+db_filename = hms
+
+[swift]
+auth_version = 1
+auth_host = 192.168.59.200
+auth_port = 8081
+#auth_ssl = no
+auth_prefix = /auth/
+
+# test account (needs admin access to the account)
+account = test
+username = tester
+password = testing
+
+container = hms

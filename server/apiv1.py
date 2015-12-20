@@ -8,7 +8,7 @@ import functools
 
 import falcon
 
-from server import doctor, patient, appointment
+from server import doctor, patient, appointment, obj
 from server.utils import logger
 
 
@@ -600,3 +600,167 @@ class AppointmentSinkAdapter(object):
                     resp.status = falcon.HTTP_400
                     resp.body = json.dumps(resp_dict, sort_keys=True,
                         indent=4)
+
+
+
+class PostObjListener:
+
+    # @falcon.before(max_body(64*1024))
+    def on_post(self, req, resp, patientid):
+        """
+        Register a doctor in the system. The post data is in json format.
+
+        :param req.header.username: username
+        :param req.header.password: password
+        :returns: a json contains patient's id, or other related info
+                {"patientid":'d001', "info":{"info1":''}}
+        """
+        resp_dict = {}
+        try:
+            username = req.get_header('username') or 'un'
+            password = req.get_header('password') or 'pw'
+            # post_data = req.params.get('data')
+            # have pre-processed by JSONTranslator, post_data is a dict
+            post_data = req.context['doc']
+            # logger.debug('username:%s, password:%s, data:%s'
+            #     % (username, password, post_data))
+            # logger.debug('env:%s , \nstream:%s, \ncontext:, \ninput:' % (
+            #     req.env, req.stream.read()))
+        except Exception as ex:
+            logger.error('error when try to get headers and data, ', ex)
+            raise falcon.HTTPBadRequest('bad req',
+                'when read from req, please check if the req is correct.')
+        try:
+            """
+            handle_request:
+
+            """
+            status, obj_dict = obj.upload_obj(patientid, post_data)
+
+        except Exception as ex:
+            logger.exception('error when register patient, ', ex)
+            resp_dict['info'] = 'Error when register patient {}'.format(
+                'obj')
+            resp.status = falcon.HTTP_500
+            resp.body = json.dumps(resp_dict, sort_keys=True, indent=4)
+        else:
+            if status:
+                logger.debug('register ok, status positive')
+                # resp_dict['info'] = 'Register patient {} success'.format(
+                #     'obj')
+                # resp_dict['objid'] = objid
+                # resp.status = status or falcon.HTTP_200
+                resp.status = falcon.HTTP_200
+                resp.body = json.dumps(obj_dict)
+            else:
+                logger.exception('return error when try to register patient, ', ex)
+                resp_dict['errinfo'] = 'Error when register patient {}'.format(
+                    'obj')
+                resp.status = falcon.HTTP_400
+                resp.body = json.dumps(resp_dict)
+                # resp.body = json.dumps(resp_dict, sort_keys=True,
+                #     indent=4)
+
+
+class ObjectListener:
+
+    def on_get(self, req, resp, patientid, objid):
+        """
+        Get info of a patient in the system. The response data is in json format.
+
+        :param req.header.username: username
+        :param req.header.password: password
+        :returns: a json contains doctor's info
+                {"objid":'d001', "info":{"info1":''}}
+        """
+        resp_dict = {}
+        try:
+            username = req.get_header('username') or 'un'
+            password = req.get_header('password') or 'pw'
+            # logger.debug('env:%s , \nstream:%s, \ncontext:, \ninput:' % (
+            #     req.env, req.stream.read()))
+        except Exception as ex:
+            logger.error('error when try to get headers and data, ', ex)
+            raise falcon.HTTPBadRequest('bad req',
+                'when read from req, please check if the req is correct.')
+        try:
+            """
+            handle_request:
+
+            """
+            status, obj_dict = obj.get_obj(patientid, objid)
+
+        except Exception as ex:
+            logger.exception('error when get object, ', ex)
+            resp_dict['errinfo'] = 'Error when get patietn:{} object {}'.format(
+                patientid, objid)
+            resp.status = falcon.HTTP_500
+            resp.body = json.dumps(resp_dict, sort_keys=True, indent=4)
+        else:
+            if status:
+                logger.debug('get ok, status positive')
+                # resp_dict['info'] = 'Register patient {} success'.format(
+                #     'obj')
+                # resp_dict['objid'] = objid
+                # resp.status = status or falcon.HTTP_200
+                resp.status = falcon.HTTP_200
+                resp.body = json.dumps(obj_dict)
+            else:
+                logger.exception('return error when try to get object, ', ex)
+                resp_dict['errinfo'] = 'Error when get patietn:{} object {}'.format(
+                    patientid, objid)
+                resp.status = falcon.HTTP_400
+                resp.body = json.dumps(resp_dict)
+                # resp.body = json.dumps(resp_dict, sort_keys=True,
+                #     indent=4)
+
+
+class ObjectListListener:
+
+    def on_get(self, req, resp, objid):
+        """
+        Get info of a patient in the system. The response data is in json format.
+
+        :param req.header.username: username
+        :param req.header.password: password
+        :returns: a json contains doctor's info
+                {"objid":'d001', "info":{"info1":''}}
+        """
+        resp_dict = {}
+        try:
+            username = req.get_header('username') or 'un'
+            password = req.get_header('password') or 'pw'
+            # logger.debug('env:%s , \nstream:%s, \ncontext:, \ninput:' % (
+            #     req.env, req.stream.read()))
+        except Exception as ex:
+            logger.error('error when try to get headers and data, ', ex)
+            raise falcon.HTTPBadRequest('bad req',
+                'when read from req, please check if the req is correct.')
+        try:
+            """
+            handle_request:
+
+            """
+            status, objid = obj.get_obj(objid)
+
+        except Exception as ex:
+            logger.exception('error when get patient, ', ex)
+            resp_dict['info'] = 'Error when get objid {}'.format(
+                objid)
+            resp.status = falcon.HTTP_500
+            resp.body = json.dumps(resp_dict, sort_keys=True, indent=4)
+        else:
+            if status:
+                logger.debug('get ok, status positive')
+                resp_dict['info'] = 'Get objid {} success'.format(
+                    objid)
+                resp_dict['patientinfo'] = patientinfo
+                # resp.status = status or falcon.HTTP_200
+                resp.status = falcon.HTTP_200
+                resp.body = json.dumps(resp_dict)
+            else:
+                logger.exception('return error when try to get patient')
+                resp_dict['info'] = 'Error when get patient {}'.format(
+                    objid)
+                resp.status = falcon.HTTP_400
+                resp.body = json.dumps(resp_dict)

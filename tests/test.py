@@ -7,7 +7,8 @@ import time
 from server.doctor import register_doctor, get_doctor, edit_doctor
 from server.patient import register_patient, get_patient, edit_patient
 from server.appointment import make_appointment, get_appointment, check_appointment
-from server.models import create_tables, DoctorModel, PatientModel
+from server.obj import upload_obj, get_obj
+from server.models import create_tables, DoctorModel, PatientModel, ObjectModel
 from server import rediscli
 from server.config import Config
 from server.utils import logger
@@ -169,7 +170,7 @@ class PatientTest(unittest.TestCase):
                 'lastname':'bbb',
                 'birthdate':'19881010',
                 'mobile_phone':'0717771717',
-                'height':100,
+                'height':'100',
                 'doctor_in_charge':'d1'
                 }
         status, patientid = register_patient(data)
@@ -179,13 +180,13 @@ class PatientTest(unittest.TestCase):
         patient = PatientModel.get(PatientModel.email==patientid)
         self.assertEqual('19881010', patient.birthdate)
         self.assertEqual('0717771717', patient.mobile_phone)
-        self.assertEqual(100, patient.height)
+        self.assertEqual('100', patient.height)
         self.assertEqual('d1', patient.doctor_in_charge)
 
         data2 = {
                 'birthdate':'19981010',
                 'mobile_phone':'0717771799',
-                'height':120,
+                'height':'120',
                 'doctor_in_charge':'d2'
                 }
         status2, pid = edit_patient(patientid, data2)
@@ -193,7 +194,7 @@ class PatientTest(unittest.TestCase):
         self.assertTrue(status2)
         self.assertEqual('19981010', patient2.birthdate)
         self.assertEqual('0717771799', patient2.mobile_phone)
-        self.assertEqual(120, patient2.height)
+        self.assertEqual('120', patient2.height)
         self.assertEqual('d2', patient2.doctor_in_charge)
 
 
@@ -305,6 +306,129 @@ class AppointmentTest(unittest.TestCase):
         schedule_dict = ast.literal_eval(schedule)
         self.assertIn(timeslot2[8:], schedule)
         self.assertEqual('1', schedule_dict[timeslot2[8:]])
+
+
+class ObjectTest(unittest.TestCase):
+
+    def setUp(self):
+        self.test_conf = Config('./tests/configuration_test')
+        # create db, tables
+        create_tables(self.test_conf)
+
+
+    def tearDown(self):
+        os.remove('{}.sqlite3'.format(self.test_conf.db_filename))
+        # delete obj in swift
+        # db point to testdb when db point works ok
+        # os.remove('{}.sqlite3'.format('hms'))
+
+    def test_upload_obj(self):
+        patientid = '{}@hms.com'.format(str(uuid.uuid4()))
+        data = {
+                'email':patientid,
+                'firstname':'aaa',
+                'lastname':'bbb',
+                'birthdate':'19601010'
+                }
+        status, did = register_patient(data)
+
+        self.assertTrue(status)
+        self.assertIn('-', did)
+
+        patient = PatientModel.get(PatientModel.email==patientid,
+            PatientModel.firstname=='aaa',
+            PatientModel.lastname=='bbb')
+        self.assertEqual('19601010', patient.birthdate)
+
+        objectname = str(uuid.uuid4())
+        odata = {
+                    "objname": objectname,
+                    "datetime": "201511201300",
+                    "description": "x-ray"
+                }
+        status, odict = upload_obj(patientid, odata)
+
+        self.assertTrue(status)
+        self.assertIsInstance(odict, dict)
+        logger.debug('token:{}, storage_url:{}'.format(odict['auth_token'],
+            odict['storage_url']))
+        self.assertIn('auth_token', odict.keys())
+        self.assertIn('storage_url', odict.keys())
+
+        patient = PatientModel.get(PatientModel.email==patientid)
+        obj = ObjectModel.get(ObjectModel.objid==objectname+'-'+odata['datetime'])
+        self.assertIn(odata['description'], obj.description)
+        self.assertEqual(patient, obj.patient)
+
+    #
+    # def test_get_patient(self):
+    #     patientid = '{}@hms.com'.format(str(uuid.uuid4()))
+    #     data = {
+    #             'email':patientid,
+    #             'firstname':'aaa',
+    #             'lastname':'bbb',
+    #             'birthdate':'19601010',
+    #             'allergy':'allergy1'
+    #             }
+    #     status, did = register_patient(data)
+    #     status, patientinfo = get_patient(patientid)
+    #     self.assertTrue(status)
+    #     self.assertIn(patientid, patientinfo)
+    #     self.assertIn('19601010', patientinfo)
+    #
+    # def test_edit_patient(self):
+    #     """
+    #         email = CharField(max_length=100, unique=True)
+    #         firstname = CharField(max_length=100)
+    #         lastname = CharField(max_length=100)
+    #         # email = CharField()
+    #         birthdate = CharField()
+    #         address = CharField()
+    #         mobile_phone = CharField()
+    #         gender = CharField()
+    #         height = IntegerField()
+    #         weight = IntegerField()
+    #         blood_group = CharField()
+    #         occupation = CharField()
+    #         marriage = CharField()
+    #         reference = CharField(max_length=100)
+    #         doctor_in_charge = CharField()
+    #         allergy = CharField()
+    #         accompanied_by = CharField()
+    #     """
+    #     patientid = '{}@hms.com'.format(str(uuid.uuid4()))
+    #     data = {
+    #             'email':patientid,
+    #             'firstname':'aaa',
+    #             'lastname':'bbb',
+    #             'birthdate':'19881010',
+    #             'mobile_phone':'0717771717',
+    #             'height':100,
+    #             'doctor_in_charge':'d1'
+    #             }
+    #     status, patientid = register_patient(data)
+    #
+    #     self.assertTrue(status)
+    #
+    #     patient = PatientModel.get(PatientModel.email==patientid)
+    #     self.assertEqual('19881010', patient.birthdate)
+    #     self.assertEqual('0717771717', patient.mobile_phone)
+    #     self.assertEqual(100, patient.height)
+    #     self.assertEqual('d1', patient.doctor_in_charge)
+    #
+    #     data2 = {
+    #             'birthdate':'19981010',
+    #             'mobile_phone':'0717771799',
+    #             'height':120,
+    #             'doctor_in_charge':'d2'
+    #             }
+    #     status2, pid = edit_patient(patientid, data2)
+    #     patient2 = PatientModel.get(PatientModel.email==patientid)
+    #     self.assertTrue(status2)
+    #     self.assertEqual('19981010', patient2.birthdate)
+    #     self.assertEqual('0717771799', patient2.mobile_phone)
+    #     self.assertEqual(120, patient2.height)
+    #     self.assertEqual('d2', patient2.doctor_in_charge)
 
 
 if __name__ == '__main__':
