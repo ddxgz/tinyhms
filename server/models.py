@@ -254,6 +254,7 @@ class ObjectModel(BaseModel):
     patient = ForeignKeyField(PatientModel)
 
     objid = CharField(unique=True)
+    objname = CharField(max_length=100)
     description = TextField()
     datetime = CharField(max_length=100)
 
@@ -271,7 +272,7 @@ class ObjectModel(BaseModel):
             # uid=str(uuid.uuid4()),
             patient=user,
             objid=post_data.get('objname')+ '-' + post_data['datetime'],
-
+            objname=post_data.get('objname'),
             description=post_data.get('description', 'p'),
             datetime=post_data.get('datetime', datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
             )

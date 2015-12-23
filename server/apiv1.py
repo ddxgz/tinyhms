@@ -717,19 +717,24 @@ class ObjectListener:
 
 class ObjectListListener:
 
-    def on_get(self, req, resp, objid):
+    def on_get(self, req, resp, patientid):
         """
         Get info of a patient in the system. The response data is in json format.
 
         :param req.header.username: username
         :param req.header.password: password
         :returns: a json contains doctor's info
-                {"objid":'d001', "info":{"info1":''}}
+                {"patientid":'d001', "info":{"info1":''}}
         """
         resp_dict = {}
         try:
             username = req.get_header('username') or 'un'
             password = req.get_header('password') or 'pw'
+            # post_data = req.params.get('data')
+            # have pre-processed by JSONTranslator, post_data is a dict
+            # post_data = req.context['doc']
+            # logger.debug('username:%s, password:%s, data:%s'
+            #     % (username, password, post_data))
             # logger.debug('env:%s , \nstream:%s, \ncontext:, \ninput:' % (
             #     req.env, req.stream.read()))
         except Exception as ex:
@@ -741,26 +746,28 @@ class ObjectListListener:
             handle_request:
 
             """
-            status, objid = obj.get_obj(objid)
+            status, objs_dict_list = obj.get_objs(patientid)
 
         except Exception as ex:
-            logger.exception('error when get patient, ', ex)
-            resp_dict['info'] = 'Error when get objid {}'.format(
-                objid)
+            logger.exception('error when get objs, ', ex)
+            resp_dict['info'] = 'Error when get objs {}'.format(
+                'obj')
             resp.status = falcon.HTTP_500
             resp.body = json.dumps(resp_dict, sort_keys=True, indent=4)
         else:
             if status:
-                logger.debug('get ok, status positive')
-                resp_dict['info'] = 'Get objid {} success'.format(
-                    objid)
-                resp_dict['patientinfo'] = patientinfo
+                logger.debug('get objs ok, status positive')
+                # resp_dict['info'] = 'Register {} success'.format(
+                #     'obj')
+                # resp_dict['objid'] = objid
                 # resp.status = status or falcon.HTTP_200
                 resp.status = falcon.HTTP_200
-                resp.body = json.dumps(resp_dict)
+                resp.body = json.dumps(objs_dict_list)
             else:
-                logger.exception('return error when try to get patient')
-                resp_dict['info'] = 'Error when get patient {}'.format(
-                    objid)
+                logger.exception('return error when try to get objs, ', ex)
+                resp_dict['errinfo'] = 'Error when get objs {}'.format(
+                    'obj')
                 resp.status = falcon.HTTP_400
                 resp.body = json.dumps(resp_dict)
+                # resp.body = json.dumps(resp_dict, sort_keys=True,
+                #     indent=4)

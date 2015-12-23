@@ -33,7 +33,7 @@ with headers:
 ## Download an object
 
 ### GET `/v1/obj/patientid/objid`
-> returns the available appointments
+> returns a json contains auth_token and storage_url if the action success
 >
 
 

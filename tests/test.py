@@ -360,6 +360,38 @@ class ObjectTest(unittest.TestCase):
         self.assertIn(odata['description'], obj.description)
         self.assertEqual(patient, obj.patient)
 
+    def test_get_obj(self):
+        patientid = '{}@hms.com'.format(str(uuid.uuid4()))
+        data = {
+                'email':patientid,
+                'firstname':'aaa',
+                'lastname':'bbb',
+                'birthdate':'19601010'
+                }
+        status, did = register_patient(data)
+
+
+        patient = PatientModel.get(PatientModel.email==patientid,
+            PatientModel.firstname=='aaa',
+            PatientModel.lastname=='bbb')
+
+        objectname = str(uuid.uuid4())
+        odata = {
+                    "objname": objectname,
+                    "datetime": "201511201300",
+                    "description": "x-ray"
+                }
+        status, odict0 = upload_obj(patientid, odata)
+
+        status, odict = get_obj(patientid, objectname+'-'+odata['datetime'])
+
+        logger.debug('get token:{}, storage_url:{}'.format(odict['auth_token'],
+            odict['storage_url']))
+        self.assertIn('auth_token', odict.keys())
+        self.assertIn('storage_url', odict.keys())
+
+
+
     #
     # def test_get_patient(self):
     #     patientid = '{}@hms.com'.format(str(uuid.uuid4()))

@@ -2,7 +2,7 @@ import json
 
 import swiftclient
 
-from server.models import database, ObjectModel
+from server.models import database, ObjectModel, PatientModel
 from server.hmsexceptions import UserNotExistException
 from server.config import conf
 from server.utils import logger
@@ -72,7 +72,7 @@ def get_obj(patientid, objid):
     info = {}
     try:
         resp_dict = {}
-        user = ObjectModel.get(ObjectModel.objid==objid)
+        obj = ObjectModel.get(ObjectModel.objid==objid)
 
         storage_url, auth_token = swiftclient.client.get_auth(
                                         conf.auth_url,
@@ -89,3 +89,36 @@ def get_obj(patientid, objid):
 
     else:
         return 1, resp_dict
+
+
+def get_objs(patientid):
+    """
+    Get info of a doctor in the system.
+
+    :param doctorid: doctor's uid
+    :returns: a status, a str ( doctor's info on success, err info on failure)
+    """
+    # print(doctorid)
+    resp_list = []
+    try:
+        resp_dict = {}
+        patient = PatientModel.get(PatientModel.email==patientid)
+
+        for obj in ObjectModel.select().where(ObjectModel.patient==patient):
+            print('objid: %s, descrip: %s' % (obj.objid, obj.description))
+            resp_dict['objid'] = obj.objid
+            resp_dict['objname'] = obj.objname
+            resp_dict['description'] = obj.description
+            resp_dict['datetime'] = obj.datetime
+            resp_list.append(resp_dict)
+        logger.debug('objs:{}'.format(resp_list))
+
+    except Exception as ex:
+        logger.error('Exception: ', ex)
+        return 0, {'errinfo':'create obj failed, did not create obj'}
+
+    else:
+        return 1, resp_list
+
+
+get_objs('67dae658-4274-4261-9e6f-6af018a50862@hms.com')
