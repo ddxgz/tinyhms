@@ -271,7 +271,7 @@ class ObjectModel(BaseModel):
         return ObjectModel.create(
             # uid=str(uuid.uuid4()),
             patient=user,
-            objid=post_data.get('objname')+ '-' + post_data['datetime'],
+            objid=patientid + '-' + post_data.get('objname')+ '-' + post_data['datetime'],
             objname=post_data.get('objname'),
             description=post_data.get('description', 'p'),
             datetime=post_data.get('datetime', datetime.datetime.now().strftime('%Y%m%d%H%M%S'))

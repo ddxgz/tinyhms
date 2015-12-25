@@ -31,7 +31,7 @@ def upload_obj(patientid, post_data):
         resp_dict['auth_token'] = auth_token
         resp_dict['storage_url'] = storage_url + '/' + \
                         conf.container + '/' + patientid + '/' + \
-                        post_data['objname'] + '-' + post_data['datetime']
+                        patientid + '-' + post_data['objname'] + '-' + post_data['datetime']
         with database.atomic():
             obj = ObjectModel.create_by_dict(patientid, post_data)
             logger.debug(obj)
@@ -53,7 +53,7 @@ def upload_obj(patientid, post_data):
     except Exception as ex:
         logger.error('Exception: ', ex)
         q = ObjectModel.delete().where(ObjectModel.objid==
-            post_data['objname'] + '-' + post_data['datetime'])
+            patientid + '-' + post_data['objname'] + '-' + post_data['datetime'])
         q.execute()
         return 0, {'errinfo':'create obj failed, did not create obj'}
 
@@ -99,13 +99,14 @@ def get_objs(patientid):
     :returns: a status, a str ( doctor's info on success, err info on failure)
     """
     # print(doctorid)
+    logger.debug('in get_objs')
     resp_list = []
     try:
-        resp_dict = {}
         patient = PatientModel.get(PatientModel.email==patientid)
 
         for obj in ObjectModel.select().where(ObjectModel.patient==patient):
-            print('objid: %s, descrip: %s' % (obj.objid, obj.description))
+            logger.debug('objid: %s, descrip: %s' % (obj.objid, obj.description))
+            resp_dict = {}
             resp_dict['objid'] = obj.objid
             resp_dict['objname'] = obj.objname
             resp_dict['description'] = obj.description
@@ -121,4 +122,4 @@ def get_objs(patientid):
         return 1, resp_list
 
 
-get_objs('67dae658-4274-4261-9e6f-6af018a50862@hms.com')
+# get_objs('67dae658-4274-4261-9e6f-6af018a50862@hms.com')
