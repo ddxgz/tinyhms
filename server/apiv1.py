@@ -72,7 +72,7 @@ class RegDoctorListener:
                     post_data['lastname'])
                 resp_dict['doctorid'] = doctorid
                 # resp.status = status or falcon.HTTP_200
-                resp.status = falcon.HTTP_200
+                resp.status = falcon.HTTP_201
                 resp.body = json.dumps(resp_dict)
             else:
                 logger.exception('return error when try to register doctor, ', ex)
@@ -240,7 +240,7 @@ class RegPatientListener:
                     post_data['lastname'])
                 resp_dict['patientid'] = patientid
                 # resp.status = status or falcon.HTTP_200
-                resp.status = falcon.HTTP_200
+                resp.status = falcon.HTTP_201
                 resp.body = json.dumps(resp_dict)
             else:
                 logger.exception('return error when try to register patient, ', ex)
@@ -406,7 +406,7 @@ class MakeAppointmentListener:
                     post_data['doctorid']+post_data['patientid']+post_data['datetimeslot'])
                 resp_dict['appointment_url'] = appointment_url
                 # resp.status = status or falcon.HTTP_200
-                resp.status = falcon.HTTP_200
+                resp.status = falcon.HTTP_201
                 resp.body = json.dumps(resp_dict,
                     sort_keys=True, indent=4)
             else:
@@ -650,7 +650,7 @@ class PostObjListener:
                 #     'obj')
                 # resp_dict['objid'] = objid
                 # resp.status = status or falcon.HTTP_200
-                resp.status = falcon.HTTP_200
+                resp.status = falcon.HTTP_201
                 resp.body = json.dumps(obj_dict)
             else:
                 logger.exception('return error when try to register patient, ', ex)
@@ -753,7 +753,7 @@ class ObjectListener:
                 #     'obj')
                 # resp_dict['objid'] = objid
                 # resp.status = status or falcon.HTTP_200
-                resp.status = falcon.HTTP_200
+                resp.status = falcon.HTTP_204
                 resp.body = json.dumps(obj_dict)
             else:
                 logger.exception('return error when try to delete object, ', ex)
