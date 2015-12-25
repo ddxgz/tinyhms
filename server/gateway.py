@@ -143,4 +143,6 @@ def start_gateway_service(ip='0.0.0.0', port=8080):
 
 ## Useful for debugging problems in your API; works with pdb.set_trace()
 if __name__ == '__main__':
+    # create db
+    # create hms container in swift
     start_gateway_service()

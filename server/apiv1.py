@@ -714,6 +714,56 @@ class ObjectListener:
                 # resp.body = json.dumps(resp_dict, sort_keys=True,
                 #     indent=4)
 
+    def on_delete(self, req, resp, patientid, objid):
+        """
+        Get info of a patient in the system. The response data is in json format.
+
+        :param req.header.username: username
+        :param req.header.password: password
+        :returns: a json contains doctor's info
+                {"objid":'d001', "info":{"info1":''}}
+        """
+        resp_dict = {}
+        try:
+            username = req.get_header('username') or 'un'
+            password = req.get_header('password') or 'pw'
+            # logger.debug('env:%s , \nstream:%s, \ncontext:, \ninput:' % (
+            #     req.env, req.stream.read()))
+        except Exception as ex:
+            logger.error('error when try to get headers and data, ', ex)
+            raise falcon.HTTPBadRequest('bad req',
+                'when read from req, please check if the req is correct.')
+        try:
+            """
+            handle_request:
+
+            """
+            status, obj_dict = obj.delete_obj(patientid, objid)
+
+        except Exception as ex:
+            logger.exception('error when delete object, ', ex)
+            resp_dict['errinfo'] = 'Error when delete patietn:{} object {}'.format(
+                patientid, objid)
+            resp.status = falcon.HTTP_500
+            resp.body = json.dumps(resp_dict, sort_keys=True, indent=4)
+        else:
+            if status:
+                logger.debug('delete ok, status positive')
+                # resp_dict['info'] = 'Register patient {} success'.format(
+                #     'obj')
+                # resp_dict['objid'] = objid
+                # resp.status = status or falcon.HTTP_200
+                resp.status = falcon.HTTP_200
+                resp.body = json.dumps(obj_dict)
+            else:
+                logger.exception('return error when try to delete object, ', ex)
+                resp_dict['errinfo'] = 'Error when delete patietn:{} object {}'.format(
+                    patientid, objid)
+                resp.status = falcon.HTTP_400
+                resp.body = json.dumps(resp_dict)
+                # resp.body = json.dumps(resp_dict, sort_keys=True,
+                #     indent=4)
+
 
 class ObjectListListener:
 

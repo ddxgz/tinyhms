@@ -4,10 +4,12 @@ import uuid
 import ast
 import time
 
+import requests
+
 from server.doctor import register_doctor, get_doctor, edit_doctor
 from server.patient import register_patient, get_patient, edit_patient
 from server.appointment import make_appointment, get_appointment, check_appointment
-from server.obj import upload_obj, get_obj, get_objs
+from server.obj import upload_obj, get_obj, get_objs, delete_obj
 from server.models import create_tables, DoctorModel, PatientModel, ObjectModel
 from server import rediscli
 from server.config import Config
@@ -429,6 +431,48 @@ class ObjectTest(unittest.TestCase):
         odict_str = str(odict_list)
         self.assertIn('x-ray', odict_str)
         self.assertIn('y-ray', odict_str)
+
+    def test_delete_obj(self):
+        logger.debug('in test_delete_obj')
+        patientid = '{}@hms.com'.format(str(uuid.uuid4()))
+        data = {
+                'email':patientid,
+                'firstname':'aaa',
+                'lastname':'bbb',
+                'birthdate':'19601010'
+                }
+        status, did = register_patient(data)
+
+        patient = PatientModel.get(PatientModel.email==patientid,
+            PatientModel.firstname=='aaa',
+            PatientModel.lastname=='bbb')
+
+        objectname = str(uuid.uuid4())
+        odata = {
+                    "objname": objectname,
+                    "datetime": "201511201300",
+                    "description": "x-ray"
+                }
+        status, odictu = upload_obj(patientid, odata)
+        logger.debug('upload token:{}, storage_url:{}'.format(odictu['auth_token'],
+            odictu['storage_url']))
+        status, odict = get_obj(patientid, patientid+'-'+objectname+'-'+odata['datetime'])
+
+        logger.debug('get token:{}, storage_url:{}'.format(odict['auth_token'],
+            odict['storage_url']))
+        self.assertEqual(status, 1)
+
+        SUCCESS_STATUS_CODES = [200, 201, 202, 204]
+        storage_url = odictu['storage_url']
+        headers = {'x-storage-token':odictu['auth_token']}
+        files = {'file': open('configuration')}
+        put_resp = requests.put(storage_url, files=files, headers=headers)
+        page = put_resp.headers
+        code = put_resp.status_code
+        self.assertIn(code, SUCCESS_STATUS_CODES)
+
+        status2, odict = delete_obj(patientid, patientid+'-'+objectname+'-'+odata['datetime'])
+        self.assertEqual(status2, 1)
 
 
 if __name__ == '__main__':

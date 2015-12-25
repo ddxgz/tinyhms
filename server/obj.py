@@ -85,7 +85,7 @@ def get_obj(patientid, objid):
 
     except Exception as ex:
         logger.error('Exception: ', ex)
-        return 0, {'errinfo':'create obj failed, did not create obj'}
+        return 0, {'errinfo':'get obj failed'}
 
     else:
         return 1, resp_dict
@@ -116,10 +116,51 @@ def get_objs(patientid):
 
     except Exception as ex:
         logger.error('Exception: ', ex)
-        return 0, {'errinfo':'create obj failed, did not create obj'}
+        return 0, {'errinfo':'get objs failed'}
 
     else:
         return 1, resp_list
 
 
+def delete_obj(patientid, objid):
+    """
+    Get info of a doctor in the system.
+
+    :param doctorid: doctor's uid
+    :returns: a status, a str ( doctor's info on success, err info on failure)
+    """
+    # print(doctorid)
+    info = {}
+    try:
+        resp_dict = {}
+
+        conn = swiftclient.client.Connection(conf.auth_url,
+                        conf.account_username,
+                        conf.password,
+                        auth_version=conf.auth_version)
+        meta, objects = conn.get_container(conf.container,
+            prefix=patientid + '/' + objid)
+        logger.debug('meta: %s,  \n objects: %s' % (meta, objects))
+        if objects:
+            for obj in objects:
+                conn.delete_object(conf.container, obj['name'])
+                resp_dict['description_'+obj['name']] = \
+                    '{} have been deleted'.format(obj['name'])
+        else:
+            resp_dict['description'] = 'There is no file to be deleted'
+        logger.debug('resp_dict:%s' % resp_dict)
+
+        q = ObjectModel.delete().where(ObjectModel.objid==objid)
+        q.execute()
+        resp_dict[objid] = 'deleted from db'
+        logger.debug('resp_dict:%s' % resp_dict)
+
+    except Exception as ex:
+        logger.error('Exception: ', ex)
+        return 0, {'errinfo':'delete obj failed, did not delete obj'}
+
+    else:
+        return 1, resp_dict
+
 # get_objs('67dae658-4274-4261-9e6f-6af018a50862@hms.com')
+# delete_obj('67dae658-4274-4261-9e6f-6af018a50862@hms.com')
