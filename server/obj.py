@@ -58,6 +58,7 @@ def upload_obj(patientid, post_data):
         return 0, {'errinfo':'create obj failed, did not create obj'}
 
     else:
+        resp_dict['info'] = 'make PUT request to storage_url with auth_token as "x-storage-token" in headers'
         return 1, resp_dict
 
 
