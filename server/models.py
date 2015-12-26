@@ -2,7 +2,7 @@ import datetime
 import uuid
 
 from peewee import SqliteDatabase, Model, CharField, BooleanField, IntegerField, \
-    TextField, ForeignKeyField
+    TextField, ForeignKeyField, CompositeKey
 
 from server.config import conf
 from server.utils import logger
@@ -25,10 +25,13 @@ def point_db(config):
         logger.error('MySQL support is not implemented yet!')
     return database
 
-def create_tables(config):
+
+def create_tables(config, create_initdata=False):
     database = point_db(config)
     database.connect()
-    database.create_tables([DoctorModel, PatientModel, ObjectModel], safe=True)
+    database.create_tables([DoctorModel, PatientModel, ObjectModel, LoginModel], safe=True)
+    if create_initdata:
+        pass
     return database
     # database.create_tables([DoctorModel])
 
@@ -62,6 +65,7 @@ class DoctorModel(BaseModel):
     profession = CharField(max_length=100)
     experience = IntegerField()
     gender = CharField(max_length=10)
+    patients = TextField()
 
     class Meta:
         order_by = ('lastname',)
@@ -83,6 +87,7 @@ class DoctorModel(BaseModel):
             # need a better solution
             experience=int(post_data.get('experience', '0')),
             gender=post_data.get('gender', 'm'),
+            patients=post_data.get('patients', '')
             )
 
     @classmethod
@@ -103,6 +108,7 @@ class DoctorModel(BaseModel):
             user_dict['profession'] = user.profession
             user_dict['experience'] = str(user.experience)
             user_dict['gender'] = user.gender
+            user_dict['patients'] = user.patients
             logger.debug('after ger user: %s' % email)
             return user_dict
 
@@ -117,6 +123,7 @@ class DoctorModel(BaseModel):
                 profession=post_data.get('profession', user.profession),
                 experience=int(post_data.get('experience', user.experience)),
                 gender=post_data.get('gender', user.gender),
+                patients=post_data.get('patients', user.patients),
                 ).where(DoctorModel.email==email)
             q.execute()
 
@@ -276,6 +283,19 @@ class ObjectModel(BaseModel):
             description=post_data.get('description', 'p'),
             datetime=post_data.get('datetime', datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
             )
+
+
+class LoginModel(BaseModel):
+    """
+
+    """
+
+    username = CharField(max_length=100, unique=True)
+    password = CharField(max_length=100)
+    role = CharField(max_length=100)
+
+    # class Meta:
+    #     primary_key = CompositeKey('username', 'role')
 
 
 if __name__ == '__main__':

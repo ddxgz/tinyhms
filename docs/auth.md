@@ -3,7 +3,7 @@ Post request with username and password to certain api for a certain role, retur
 
 ## Login as Admin
 
-### POST `/v1/auth/admin`
+### POST `/v1/auth/{admin}`
 > post with data like this:
 ```
 {
@@ -25,6 +25,7 @@ Post request with username and password to certain api for a certain role, retur
 ```
 > returns if the access token or 0 on failure
 
+>> in redis,
 
 ## Login as Patient
 

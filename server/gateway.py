@@ -92,7 +92,7 @@ if conf.api_version == "1":
     from server.apiv1 import RegDoctorListener, DoctorListener, RegPatientListener, \
         PatientListener, MakeAppointmentListener, AppointmentListener, \
         AppointmentListListener, AppointmentSinkAdapter, PostObjListener, ObjectListener, \
-        ObjectListListener
+        ObjectListListener, AuthListener
 
 # elif conf.api_version is "2":
 #     from apiv2 import HomeListener, AccountListener, \
@@ -120,6 +120,8 @@ post_obj_listener = PostObjListener()
 obj_listener = ObjectListener()
 objlist_listener = ObjectListListener()
 
+auth_listener = AuthListener()
+
 app.add_route('/v1/appointment', make_appointment_listener)
 app.add_route('/v1/appointment/{doctorid}/{datetimeslot}/{patientid}',
                 appointment_listener)
@@ -136,6 +138,8 @@ app.add_route('/v1/obj/{patientid}', post_obj_listener)
 app.add_route('/v1/objs/{patientid}', objlist_listener)
 app.add_route('/v1/obj/{patientid}/{objid}', obj_listener)
 
+app.add_route('/v1/auth/{role}', auth_listener)
+
 
 def start_gateway_service(ip='0.0.0.0', port=8080):
     httpd = simple_server.make_server(ip, port, app)
@@ -144,5 +148,6 @@ def start_gateway_service(ip='0.0.0.0', port=8080):
 ## Useful for debugging problems in your API; works with pdb.set_trace()
 if __name__ == '__main__':
     # create db
+    # create admin account
     # create hms container in swift
     start_gateway_service()

@@ -10,7 +10,8 @@ from server.doctor import register_doctor, get_doctor, edit_doctor
 from server.patient import register_patient, get_patient, edit_patient
 from server.appointment import make_appointment, get_appointment, check_appointment
 from server.obj import upload_obj, get_obj, get_objs, delete_obj
-from server.models import create_tables, DoctorModel, PatientModel, ObjectModel
+from server.models import create_tables, DoctorModel, PatientModel, ObjectModel, LoginModel
+from server.auth import authentication, get_token
 from server import rediscli
 from server.config import Config
 from server.utils import logger
@@ -475,5 +476,81 @@ class ObjectTest(unittest.TestCase):
         self.assertEqual(status2, 1)
 
 
+class AuthTest(unittest.TestCase):
+
+    def setUp(self):
+        self.test_conf = Config('tests/configuration_test')
+        # create db, tables
+        create_tables(self.test_conf)
+
+
+    def tearDown(self):
+        os.remove('{}.sqlite3'.format(self.test_conf.db_filename))
+        # db point to testdb when db point works ok
+        # os.remove('{}.sqlite3'.format('hms'))
+
+    def test_authentication(self):
+        logger.debug('in test_authentication')
+        LoginModel.create(
+            username='admin',
+            password='admin',
+            role='admin'
+            )
+
+        adm_login = {
+                'username':'admin',
+                'password':'admin',  }
+
+        status, adm_token = authentication('admin', adm_login)
+        self.assertTrue(status)
+        logger.debug('adm_token:{}'.format(adm_token))
+
+        doctorid = '{}@hms.com'.format(str(uuid.uuid4()))
+        doc_data = {
+                'email':doctorid,
+                'firstname':'aaa',
+                'lastname':'bbb',
+                'experience':10,
+                'patients': "['p1@a.com', 'p2@c.com']"
+                }
+        status, did = register_doctor(doc_data)
+        self.assertTrue(status)
+        LoginModel.create(
+                    username=doctorid,
+                    password='admin',
+                    role='doctor')
+
+        doc_login = {
+                'username':doctorid,
+                'password':'admin',  }
+
+        status, doc_token = authentication('doctor', doc_login)
+        self.assertTrue(status)
+        logger.debug('doc_token:{}'.format(doc_token))
+
+        patientid = '{}@hms.com'.format(str(uuid.uuid4()))
+        p_data = {
+                'email':patientid,
+                'firstname':'aaa',
+                'lastname':'bbb',
+                }
+        status, did = register_patient(p_data)
+        self.assertTrue(status)
+        LoginModel.create(
+                    username=patientid,
+                    password='admin',
+                    role='patient')
+
+        p_login = {
+                'username':patientid,
+                'password':'admin',  }
+
+        status, patient_token = authentication('patient', p_login)
+        self.assertTrue(status)
+        logger.debug('patient_token:{}'.format(patient_token))
+
+
+
 if __name__ == '__main__':
     unittest.main()
+    os.remove('{}.sqlite3'.format('hms'))
