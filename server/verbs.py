@@ -118,26 +118,60 @@ class Visit():
     def __init__(self, baseurl):
         self.baseurl = baseurl
 
+    def _rslash(self, suffix_url):
+        return '/' + suffix_url.lstrip('/')
+
     # @asyncio.coroutine
-    def get(self, suffix_url='', headers=None, data=None, wait=0):
-        print('%s sleep:%s' % (headers['username'], 1/wait))
-        # yield from asyncio.sleep(1/wait)
-        # req = urllib2.Request(self.baseurl+suffix_url, headers=headers)
-        req = urllib2.request.Request(self.baseurl+suffix_url, headers=headers)
-        resp = urllib2.request.urlopen(req)
-        page = resp.read()
-        code = resp.getcode()
-        logging.debug('code:%s, page:%s' % (code, page))
+    def get(self, suffix_url='', headers=None, data=None, wait=1):
+        # print('%s sleep:%s' % (headers, 1/wait))
+        # # yield from asyncio.sleep(1/wait)
+        # # req = urllib2.Request(self.baseurl+suffix_url, headers=headers)
+        # req = urllib2.request.Request(self.baseurl+suffix_url, headers=headers)
+        # resp = urllib2.request.urlopen(req)
+        # page = resp.read()
+        # code = resp.getcode()
+        # logging.debug('code:%s, page:%s' % (code, page))
+        # return code, page
+        return self._requests_get(suffix_url=suffix_url, headers=headers,
+            data=data)
+
+    def _requests_get(self, suffix_url='', headers=None, data=None):
+
+        resp = requests.get(self.baseurl+self._rslash(suffix_url),
+                headers=headers)
+        # page = resp.headers
+        page = resp.text
+        code = resp.status_code
+        logging.debug('put_resp:{}, code:{}'.format(page, code))
         return code, page
 
     def put(self, suffix_url='', headers=None, data=None):
-        req = urllib2.Request(self.baseurl+suffix_url, headers=headers,
+        # req = urllib2.Request(self.baseurl+suffix_url, headers=headers,
+        #     data=data)
+        # req.get_method = lambda: 'PUT'
+        # resp = urllib2.urlopen(req)
+        # page = resp.read()
+        # code = resp.getcode()
+        # req = requests.put(self.baseurl+self._rslash(suffix_url), headers=headers, data=data)
+        #
+        # logging.debug('code:%s, page:%s' % (req.status_code, req.text))
+        # return req.status_code, req.text
+        return self._requests_put(suffix_url=suffix_url, headers=headers,
             data=data)
-        req.get_method = lambda: 'PUT'
-        resp = urllib2.urlopen(req)
-        page = resp.read()
-        code = resp.getcode()
-        logging.debug('code:%s, page:%s' % (code, page))
+
+    def _requests_put(self, suffix_url='', headers=None, data=None):
+        if isinstance(data, dict):
+            logging.debug('data is dict')
+            resp = requests.put(self.baseurl+self._rslash(suffix_url),
+                headers=headers, data=json.dumps(data))
+        elif isinstance(data, str):
+            logging.debug('data is dict')
+            resp = requests.put(self.baseurl+self._rslash(suffix_url),
+                headers=headers, json=data)
+        # page = resp.headers
+        page = resp.text
+        code = resp.status_code
+        logging.debug('put_resp:{}, code:{}'.format(page, code))
         return code, page
 
     def put_file(self, filename='', suffix_url='', headers=None, data=None):
@@ -155,15 +189,39 @@ class Visit():
         return code, page
 
 
+    # def post(self, suffix_url='', headers=None, data=None):
+    #     req = urllib2.request.Request(self.baseurl+suffix_url,
+    #         headers=headers, data=data)
+    #     resp = urllib2.request.urlopen(req)
+    #     page = resp.read()
+    #     code = resp.getcode()
+    #     logging.debug('code:%s, page:%s' % (code, page))
+    #     return code, page
     def post(self, suffix_url='', headers=None, data=None):
-        req = urllib2.request.Request(self.baseurl+suffix_url,
-            headers=headers, data=data)
-        resp = urllib2.request.urlopen(req)
-        page = resp.read()
-        code = resp.getcode()
-        logging.debug('code:%s, page:%s' % (code, page))
-        return code, page
+        # req = urllib2.Request(self.baseurl+self._rslash(suffix_url),
+        #     headers=headers, data=data)
+        # resp = urllib2.urlopen(req)
+        # page = resp.read()
+        # code = resp.getcode()
+        # logging.debug('code:%s, page:%s' % (code, page))
+        # return code, page
+        return self._requests_post(suffix_url=suffix_url, headers=headers,
+            data=data)
 
+    def _requests_post(self, suffix_url='', headers=None, data=None):
+        if isinstance(data, dict):
+            logging.debug('data is dict')
+            resp = requests.post(self.baseurl+self._rslash(suffix_url),
+                headers=headers, data=json.dumps(data))
+        elif isinstance(data, str):
+            logging.debug('data is dict')
+            resp = requests.post(self.baseurl+self._rslash(suffix_url),
+                headers=headers, json=data)
+        # page = resp.headers
+        page = resp.text
+        code = resp.status_code
+        logging.debug('post_resp:{}, code:{}'.format(page, code))
+        return code, page
 
     def delete(self, suffix_url='', headers=None, data=None):
         req = urllib2.Request(self.baseurl+suffix_url, headers=headers,

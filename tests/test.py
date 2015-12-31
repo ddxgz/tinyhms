@@ -1,5 +1,6 @@
 import os
 import unittest
+from unittest import mock
 import uuid
 import ast
 import time
@@ -491,14 +492,14 @@ class AuthTest(unittest.TestCase):
 
     def test_authentication(self):
         logger.debug('in test_authentication')
+        adminid = 'admin_{}'.format(str(uuid.uuid4()))
         LoginModel.create(
-            username='admin',
+            username=adminid,
             password='admin',
             role='admin'
             )
-
         adm_login = {
-                'username':'admin',
+                'username':adminid,
                 'password':'admin',  }
 
         status, adm_token = authentication('admin', adm_login)

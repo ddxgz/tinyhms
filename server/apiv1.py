@@ -8,7 +8,8 @@ import functools
 
 import falcon
 
-from server import doctor, patient, appointment, obj
+from server import doctor, patient, appointment, obj, auth
+from server import rediscli
 from server.utils import logger
 
 
@@ -25,23 +26,132 @@ def max_body(limit):
     return hook
 
 
+
+def authentication(req, required_roles, doctorid='', patientid=''):
+    """
+    required_roles is a list of role's string
+    """
+    token = req.get_header('token')
+    role_req = req.get_header('role')
+    logger.debug('role:{}, token:{}'.format(role_req, token))
+    if token is None or role_req not in required_roles:
+        description = ('Please provide an auth token '
+                        'and a correspond role'
+                       'as part of the request.')
+
+        raise falcon.HTTPUnauthorized('Auth token and Role required',
+                      description,
+                      href='http://pa2515-hms-server.readthedocs.org/en/latest/auth')
+
+    # for role in required_roles:
+    if role_req == 'admin':
+        token_true = rediscli.get_data('auth/admin')
+        # token_true = 'abc'
+        logger.debug('token in headers:{}, \n token in redis:{}'.format(
+            token, token_true
+        ))
+        if token == token_true:
+            return True
+
+    elif role_req == 'doctor':
+        logger.debug('in doctor authentication doctorid:{}'.format(doctorid))
+        token_true = rediscli.get_data('auth/{}'.format(doctorid))
+        # logger.debug('patient_list:{}, type:{}'.format(patient_list, type(patient_list)))
+        logger.debug('token in headers:{}, \n token in redis:{}'.format(
+            token, token_true
+        ))
+        if token == token_true:
+            return True
+    elif role_req == 'patient':
+        logger.debug('in patient authentication patientid:{}'.format(patientid))
+        token_true = rediscli.get_data('auth/{}'.format(patientid))
+        # logger.debug('patient_list:{}, type:{}'.format(patient_list, type(patient_list)))
+        logger.debug('token in headers:{}, \n token in redis:{}'.format(
+            token, token_true
+        ))
+        if token == token_true:
+            return True
+    # elif role_req == 'patient':
+    #     token = uuid.uuid4().hex
+    #     rediscli.set_data('auth/{}'.format(username), token)
+
+    description = ('The provided auth token is not valid. '
+                   'Please request a new token and try again.')
+
+    raise falcon.HTTPUnauthorized('Authentication required',
+                                  description,
+                                  href='http://pa2515-hms-server.readthedocs.org/en/latest/auth')
+    return False
+
+# class authentication:
+#     """
+#     required_roles is a list of role's string
+#     """
+#     def __init__(self, required_roles=[]):
+#         self.required_roles = required_roles
+#     # def hook(req, resp, resource, params, required_roles, *args, **kwargs):
+#
+#     def __call__(self, f):
+#         def hook(*args, **kwargs):
+#             req = args[1]
+#
+#             token = req.get_header('token')
+#             if token is None:
+#                 description = ('Please provide an auth token '
+#                                'as part of the request.')
+#
+#                 raise falcon.HTTPUnauthorized('Auth token required',
+#                               description,
+#                               href='http://pa2515-hms-server.readthedocs.org/en/latest/auth')
+#
+#             for role in required_roles:
+#                 if role == 'admin':
+#                     token_true = rediscli.get_data('auth/admin')
+#                     # token_true = 'abc'
+#                     logger.debug('token in headers:{}, \n token in redis:{}'.format(
+#                         token, token_true
+#                     ))
+#                     if token == token_true:
+#                         return True
+#
+#                 elif role == 'doctor':
+#                     logger.debug('in doctor authentication doctorid:{}'.format(doctorid))
+#                     token_true = rediscli.get_data('auth/{}'.format(doctorid))
+#                     logger.debug('patient_list:{}, type:{}'.format(patient_list, type(patient_list)))
+#                     logger.debug('token in headers:{}, \n token in redis:{}'.format(
+#                         token, token_true
+#                     ))
+#                     if token == token_true:
+#                         return True
+#                 # elif role == 'patient':
+#                 #     token = uuid.uuid4().hex
+#                 #     rediscli.set_data('auth/{}'.format(username), token)
+#
+#                 description = ('The provided auth token is not valid. '
+#                                'Please request a new token and try again.')
+#
+#                 raise falcon.HTTPUnauthorized('Authentication required',
+#                                               description,
+#                                               href='http://pa2515-hms-server.readthedocs.org/en/latest/auth')
+#         return hook
+
+
 class RegDoctorListener:
 
     @falcon.before(max_body(64*1024))
+    # @falcon.before(authentication(['admin']))
     def on_post(self, req, resp):
         """
         Register a doctor in the system. The post data is in json format.
 
-        :param req.header.username: username
-        :param req.header.password: password
+        :param req.header.token: token
+        :param req.header.role: role
         :returns: a json contains doctor's id, or other related info
                 {"doctorid":'d001', "info":{"info1":''}}
         """
+        authentication(req, ['admin'])
         resp_dict = {}
         try:
-            username = req.get_header('username') or 'un'
-            password = req.get_header('password') or 'pw'
-            # post_data = req.params.get('data')
             # have pre-processed by JSONTranslator, post_data is a dict
             post_data = req.context['doc']
             # logger.debug('username:%s, password:%s, data:%s'
@@ -58,7 +168,6 @@ class RegDoctorListener:
 
             """
             status, doctorid = doctor.register_doctor(post_data)
-
         except Exception as ex:
             logger.exception('error when register doctor, ', ex)
             resp_dict['info'] = 'Error when register doctor {}'.format(
@@ -71,7 +180,6 @@ class RegDoctorListener:
                 resp_dict['info'] = 'Register doctor {} success'.format(
                     post_data['lastname'])
                 resp_dict['doctorid'] = doctorid
-                # resp.status = status or falcon.HTTP_200
                 resp.status = falcon.HTTP_201
                 resp.body = json.dumps(resp_dict)
             else:
@@ -82,26 +190,20 @@ class RegDoctorListener:
                 resp.body = json.dumps(resp_dict)
 
 class DoctorListener:
+    # def __init__(self, doctorid):
+    #     self.doctorid = doctorid
 
     def on_get(self, req, resp, doctorid):
         """
         Get info of a doctor in the system. The response data is in json format.
 
-        :param req.header.username: username
-        :param req.header.password: password
+        :param req.header.token: token
+        :param req.header.role: role
         :returns: a json contains doctor's info
                 {"doctorid":'d001', "info":{"info1":''}}
         """
+        authentication(req, ['admin', 'doctor'], doctorid=doctorid)
         resp_dict = {}
-        try:
-            username = req.get_header('username') or 'un'
-            password = req.get_header('password') or 'pw'
-            # logger.debug('env:%s , \nstream:%s, \ncontext:, \ninput:' % (
-            #     req.env, req.stream.read()))
-        except Exception as ex:
-            logger.error('error when try to get headers and data, ', ex)
-            raise falcon.HTTPBadRequest('bad req',
-                'when read from req, please check if the req is correct.')
         try:
             """
             handle_request:
@@ -132,32 +234,29 @@ class DoctorListener:
                 resp.body = json.dumps(resp_dict)
 
     @falcon.before(max_body(64*1024))
+    # @falcon.before(authentication(['admin', 'doctor']))
     def on_put(self, req, resp, doctorid):
         """
         Edit a doctor in the system. The PUT data is in json format.
 
-        :param req.header.username: username
-        :param req.header.password: password
+        :param req.header.token: token
+        :param req.header.role: role
         :returns: a json contains doctor's id, or other related info
                 {"doctorid":'d001', "info":{"info1":''}}
         """
+        authentication(req, ['admin', 'doctor'], doctorid=doctorid)
         resp_dict = {}
         logger.debug('in doctor put')
-
         try:
-            username = req.get_header('username') or 'un'
-            password = req.get_header('password') or 'pw'
-            # post_data = req.params.get('data')
             # have pre-processed by JSONTranslator, post_data is a dict
             logger.debug('in doctor put, before got post_data')
-
             post_data = req.context['doc']
             # logger.debug('username:%s, password:%s, data:%s'
             #     % (username, password, post_data))
             # logger.debug('env:%s , \nstream:%s, \ncontext:, \ninput:' % (
             #     req.env, req.stream.read()))
         except Exception as ex:
-            logger.error('error when try to get headers and data, ', ex)
+            logger.error('error when try to get data, ', ex)
             raise falcon.HTTPBadRequest('bad req',
                 'when read from req, please check if the req is correct.')
         try:
@@ -168,8 +267,8 @@ class DoctorListener:
             status, doctorid = doctor.edit_doctor(doctorid, post_data)
 
         except Exception as ex:
-            logger.exception('error when register doctor, ', ex)
-            resp_dict['info'] = 'Error when register doctor {}'.format(
+            logger.exception('error when edit doctor, ', ex)
+            resp_dict['info'] = 'Error when edit doctor {}'.format(
                 doctorid)
             resp.status = falcon.HTTP_500
             resp.body = json.dumps(resp_dict, sort_keys=True, indent=4)
@@ -198,18 +297,16 @@ class RegPatientListener:
     @falcon.before(max_body(64*1024))
     def on_post(self, req, resp):
         """
-        Register a doctor in the system. The post data is in json format.
+        Register a patient in the system. The post data is in json format.
 
-        :param req.header.username: username
-        :param req.header.password: password
+        :param req.header.token: token
+        :param req.header.role: role
         :returns: a json contains patient's id, or other related info
                 {"patientid":'d001', "info":{"info1":''}}
         """
+        authentication(req, ['admin', 'doctor'])
         resp_dict = {}
         try:
-            username = req.get_header('username') or 'un'
-            password = req.get_header('password') or 'pw'
-            # post_data = req.params.get('data')
             # have pre-processed by JSONTranslator, post_data is a dict
             post_data = req.context['doc']
             # logger.debug('username:%s, password:%s, data:%s'
@@ -258,21 +355,13 @@ class PatientListener:
         """
         Get info of a patient in the system. The response data is in json format.
 
-        :param req.header.username: username
-        :param req.header.password: password
-        :returns: a json contains doctor's info
+        :param req.header.token: token
+        :param req.header.role: role
+        :returns: a json contains patient's info
                 {"patientid":'d001', "info":{"info1":''}}
         """
+        authentication(req, ['admin', 'doctor', 'patient'], patientid=patientid)
         resp_dict = {}
-        try:
-            username = req.get_header('username') or 'un'
-            password = req.get_header('password') or 'pw'
-            # logger.debug('env:%s , \nstream:%s, \ncontext:, \ninput:' % (
-            #     req.env, req.stream.read()))
-        except Exception as ex:
-            logger.error('error when try to get headers and data, ', ex)
-            raise falcon.HTTPBadRequest('bad req',
-                'when read from req, please check if the req is correct.')
         try:
             """
             handle_request:
@@ -289,12 +378,12 @@ class PatientListener:
         else:
             if status:
                 logger.debug('get ok, status positive')
-                resp_dict['info'] = 'Get patient {} success'.format(
-                    patientid)
-                resp_dict['patientinfo'] = patientinfo
+                # resp_dict['info'] = 'Get patient {} success'.format(
+                #     patientid)
+                # resp_dict['patientinfo'] = patientinfo
                 # resp.status = status or falcon.HTTP_200
                 resp.status = falcon.HTTP_200
-                resp.body = json.dumps(resp_dict)
+                resp.body = patientinfo
             else:
                 logger.exception('return error when try to get patient')
                 resp_dict['info'] = 'Error when get patient {}'.format(
@@ -307,21 +396,17 @@ class PatientListener:
         """
         Edit a patient in the system. The PUT data is in json format.
 
-        :param req.header.username: username
-        :param req.header.password: password
+        :param req.header.token: token
+        :param req.header.role: role
         :returns: a json contains patient's id, or other related info
                 {"patientid":'d001', "info":{"info1":''}}
         """
+        authentication(req, ['admin', 'doctor', 'patient'], patientid=patientid)
         resp_dict = {}
         logger.debug('in patient put')
-
         try:
-            username = req.get_header('username') or 'un'
-            password = req.get_header('password') or 'pw'
-            # post_data = req.params.get('data')
             # have pre-processed by JSONTranslator, post_data is a dict
             logger.debug('in patient put, before got post_data')
-
             post_data = req.context['doc']
             # logger.debug('username:%s, password:%s, data:%s'
             #     % (username, password, post_data))
@@ -339,8 +424,8 @@ class PatientListener:
             status, patientid = patient.edit_patient(patientid, post_data)
 
         except Exception as ex:
-            logger.exception('error when register patient, ', ex)
-            resp_dict['info'] = 'Error when register patient {}'.format(
+            logger.exception('error when edit patient, ', ex)
+            resp_dict['info'] = 'Error when edit patient {}'.format(
                 patientid)
             resp.status = falcon.HTTP_500
             resp.body = json.dumps(resp_dict, sort_keys=True, indent=4)
@@ -418,7 +503,6 @@ class MakeAppointmentListener:
 
 
 class AppointmentListener:
-
 
     def on_get(self, req, resp, doctorid, datetimeslot, patientid):
         """
@@ -605,7 +689,7 @@ class AppointmentSinkAdapter(object):
 
 class PostObjListener:
 
-    # @falcon.before(max_body(64*1024))
+    @falcon.before(max_body(64*1024))
     def on_post(self, req, resp, patientid):
         """
         Register a doctor in the system. The post data is in json format.
@@ -825,6 +909,7 @@ class ObjectListListener:
 
 class AuthListener:
 
+    @falcon.before(max_body(64*1024))
     def on_post(self, req, resp, role):
         """
         Get info of a patient in the system. The response data is in json format.
@@ -841,6 +926,7 @@ class AuthListener:
             # post_data = req.params.get('data')
             # have pre-processed by JSONTranslator, post_data is a dict
             post_data = req.context['doc']
+            logger.debug('type of post_data:{}'.format(type(post_data)))
             if not ('password' in post_data.keys() and 'username' in post_data.keys()):
                 resp_dict['errinfo'] = 'Error, no password or username in post data'
                 resp.status = falcon.HTTP_400
@@ -858,7 +944,7 @@ class AuthListener:
             handle_request:
 
             """
-            status, token_dict = auth.authentication(role, post_data)
+            status, token = auth.authentication(role, post_data)
 
         except Exception as ex:
             logger.exception('error when get objs, ', ex)
@@ -871,10 +957,10 @@ class AuthListener:
                 logger.debug('get objs ok, status positive')
                 # resp_dict['info'] = 'Register {} success'.format(
                 #     'obj')
-                # resp_dict['objid'] = objid
+                resp_dict['token'] = token
                 # resp.status = status or falcon.HTTP_200
                 resp.status = falcon.HTTP_201
-                resp.body = json.dumps(token_dict)
+                resp.body = json.dumps(resp_dict)
             else:
                 logger.exception('return error when try to get objs, ', ex)
                 resp_dict['errinfo'] = 'Error when get objs {}'.format(

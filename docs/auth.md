@@ -1,5 +1,5 @@
 # Auth
-Post request with username and password to certain api for a certain role, returns a token, the token should be put in header for further requests.
+Post request with username and password to certain api for a certain role, returns a token, the token and the role should be put in header for further requests.
 
 ## Login as Admin
 

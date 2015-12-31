@@ -25,16 +25,19 @@ def authentication(role, post_data):
         logger.error('Exception: ', ex)
         return 0, 'auth failed'
     else:
+        logger.debug("user.password:{}, post_data['password']:{}".format(
+            user.password, post_data['password']))
         if user.password==post_data['password']:
             try:
-                auth_dict['token'] = get_token(post_data['username'], role)
+                # auth_dict['token'] = get_token(post_data['username'], role)
+                token = get_token(post_data['username'], role)
             except Exception as ex:
                 logger.error('Exception: ', ex)
                 return 0, 'auth failed, get token failed'
             else:
-                auth_json = json.dumps(auth_dict)
-                logger.debug(auth_json)
-                return 1, auth_json
+                # auth_json = json.dumps(auth_dict)
+                logger.debug(token)
+                return 1, token
         else:
             return 0, 'auth failed, password not match'
 
@@ -49,9 +52,13 @@ def get_token(username, role):
         user = DoctorModel.get(DoctorModel.email==username)
         logger.debug('user.patients:{}, type:{}'.format(user.patients, type(user.patients)))
         # patient_list = json.loads(str(user.patients))
-        patient_list = ast.literal_eval(user.patients)
+        if user.patients:
+            patient_list = ast.literal_eval(user.patients)
+        else:
+            patient_list = []
         logger.debug('patient_list:{}, type:{}'.format(patient_list, type(patient_list)))
         token = uuid.uuid4().hex
+        rediscli.set_data('auth/{}'.format(username), token)
         for patient in patient_list:
             rediscli.set_data('auth/{}/{}'.format(username, patient), token)
         return token
