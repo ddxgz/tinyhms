@@ -550,7 +550,7 @@ class AuthTest(unittest.TestCase):
                 'firstname':'aaa',
                 'lastname':'bbb',
                 'experience':10,
-                'patients': "['p1@a.com', 'p2@c.com']"
+                'patients': '["p1@a.com", "p2@c.com"]'
                 }
         status, did = register_doctor(doc_data)
         self.assertTrue(status)

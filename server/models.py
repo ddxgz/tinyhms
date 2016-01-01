@@ -29,7 +29,8 @@ def point_db(config):
 def create_tables(config, create_initdata=False):
     database = point_db(config)
     database.connect()
-    database.create_tables([DoctorModel, PatientModel, ObjectModel, LoginModel], safe=True)
+    database.create_tables([DoctorModel, PatientModel, ObjectModel,
+        PrescriptionModel, LoginModel], safe=True)
     if create_initdata:
         pass
     return database
@@ -129,26 +130,6 @@ class DoctorModel(BaseModel):
 
 
 class PatientModel(BaseModel):
-    """
-    {
-        'first_name':'',
-        'last_name':'',
-        'birthdate':'',
-        'mobile_phone','',
-        'email':'',
-        'address':'',
-        'gender':'',
-        'height':'',
-        'weight':'',
-        'blood_group':'',
-        'occupation':'',
-        'marriage':'',
-        'reference':'',
-        'doctor_in_charge':'',
-        'allergy':[],
-        'accompanied_by':'',
-    }
-    """
     # uid = CharField(unique=True)
     email = CharField(max_length=100, unique=True)
     firstname = CharField(max_length=100)
@@ -273,7 +254,7 @@ class ObjectModel(BaseModel):
         order_by = ('objid',)
 
     def __str__(self):
-        return str(self.patient) + '/' + self.objid
+        return str(self.patient) + '/' + str(self.objid)
 
     @classmethod
     def create_by_dict(cls, patientid, post_data):
@@ -286,6 +267,42 @@ class ObjectModel(BaseModel):
             objname=post_data.get('objname'),
             description=post_data.get('description', 'p'),
             datetime=post_data.get('datetime', datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
+            )
+
+
+class PrescriptionModel(BaseModel):
+    """
+
+    """
+    patient = ForeignKeyField(PatientModel)
+    drug_id = CharField(unique=True)
+    datetime = CharField(max_length=100)
+    drug_name = CharField(max_length=100)
+    after_meal = CharField(max_length=10)
+    amount = IntegerField()
+    dosage_per_day = IntegerField()
+    description = TextField()
+
+    class Meta:
+        order_by = ('drug_id',)
+
+    def __str__(self):
+        return str(self.drug_id)
+
+    @classmethod
+    def create_by_dict(cls, patientid, post_data):
+        user = PatientModel.get(PatientModel.email==patientid)
+        logger.debug(type(datetime.datetime.now().strftime('%Y%m%d%H%M%S')))
+        return PrescriptionModel.create(
+            # uid=str(uuid.uuid4()),
+            patient=user,
+            drug_id=patientid + '-' + post_data.get('drug_name')+ '-' + post_data['datetime'],
+            datetime=post_data.get('datetime', datetime.datetime.now().strftime('%Y%m%d%H%M%S')),
+            drug_name=post_data.get('drug_name'),
+            after_meal=post_data.get('after_meal'),
+            amount=post_data.get('amount'),
+            dosage_per_day=post_data.get('dosage_per_day'),
+            description=post_data.get('description', ''),
             )
 
 

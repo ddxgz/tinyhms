@@ -59,6 +59,128 @@ class TestApiv1(BaseTestCase):
 
     TODO: test 40x situations
     """
+    def setUp(self):
+        self.test_conf = Config('tests/configuration_test')
+        create_tables(self.test_conf)
+
+        self.adminid = 'admin_{}'.format(str(uuid.uuid4()))
+        self.doctorid = '{}@hms.com'.format(str(uuid.uuid4()))
+        self.patientid = '{}@hms.com'.format(str(uuid.uuid4()))
+
+        self.admin_auth()
+        self.doctor_auth()
+        self.patient_auth()
+
+    def admin_auth(self):
+
+        LoginModel.create(
+            username=self.adminid,
+            password='admin',
+            role='admin'
+            )
+
+        headers = {
+            'content-type': 'application/json'}
+
+        adm_login = {
+                'username':self.adminid,
+                'password':'admin',  }
+
+        visit = Visit(ENDPOINT)
+
+        # visit.get(headers=headers)
+        auth_code, resp_auth = visit.post(suffix_url='auth/admin', headers=headers,
+            data=adm_login)
+        logger.info('auth_code:{}, resp_auth:{}'.format(auth_code, resp_auth))
+        resp_auth = json.loads(resp_auth)
+        self.admin_token = resp_auth['token']
+
+    def doctor_auth(self):
+        visit = Visit(ENDPOINT)
+        logger.debug('before doctor_auth')
+        headers = {
+            'content-type': 'application/json'}
+        headers['token'] = self.admin_token
+        headers['role'] = 'admin'
+        regdoc_data = {
+                'email':self.doctorid,
+                'firstname':'intest',
+                'lastname':'intest',
+                'experience':10,
+                'patients': '["{}"]'.format(self.patientid)
+                }
+        doc_code, resp_doc = visit.post(suffix_url='doctor', headers=headers,
+            data=regdoc_data)
+        # logger.info('doc_code:{}, resp_auth:{}'.format(doc_code, resp_auth))
+        resp_doc = json.loads(resp_doc)
+        did = resp_doc['doctorid']
+        self.assertEqual(self.doctorid, did)
+        self.assertIn(doc_code, SUCCESS_STATUS_CODES)
+
+        self.doctorpass = 'doctor'
+        LoginModel.create(
+            username=self.doctorid,
+            password=self.doctorpass,
+            role='doctor'
+            )
+
+        headers = {
+            'content-type': 'application/json'}
+
+        doc_login = {
+                'username':self.doctorid,
+                'password':self.doctorpass,  }
+
+        auth_code, resp_auth = visit.post(suffix_url='auth/doctor', headers=headers,
+            data=doc_login)
+        logger.info('auth_code:{}, resp_auth:{}'.format(auth_code, resp_auth))
+        self.assertIn('token', resp_auth)
+        self.assertIn(auth_code, SUCCESS_STATUS_CODES)
+        # resp_auth = ast.literal_eval(resp_auth)
+        resp_auth = json.loads(resp_auth)
+        self.doctor_token = resp_auth['token']
+
+    def patient_auth(self):
+        visit = Visit(ENDPOINT)
+        logger.debug('before patient_auth')
+        headers = {
+            'content-type': 'application/json'}
+        headers['token'] = self.admin_token
+        headers['role'] = 'admin'
+        regpt_data = {
+                'email':self.patientid,
+                'firstname':'intest',
+                'lastname':'intest',
+                'height':'177'
+                }
+        doc_code, resp_doc = visit.post(suffix_url='patient', headers=headers,
+            data=regpt_data)
+        logger.info('doc_code:{}, resp_auth:{}'.format(doc_code, resp_doc))
+        self.assertIn(doc_code, SUCCESS_STATUS_CODES)
+
+        self.patientpass = 'patient'
+        LoginModel.create(
+            username=self.patientid,
+            password=self.patientpass,
+            role='patient'
+            )
+
+        headers = {
+            'content-type': 'application/json'}
+
+        pat_login = {
+                'username':self.patientid,
+                'password':self.patientpass,  }
+
+        auth_code, resp_auth = visit.post(suffix_url='auth/patient', headers=headers,
+            data=pat_login)
+        logger.info('auth_code:{}, resp_auth:{}'.format(auth_code, resp_auth))
+        self.assertIn('token', resp_auth)
+        self.assertIn(auth_code, SUCCESS_STATUS_CODES)
+        # resp_auth = ast.literal_eval(resp_auth)
+        resp_auth = json.loads(resp_auth)
+        self.pat_token = resp_auth['token']
+
     def test_reg_doctor(self):
         adminid = 'admin_{}'.format(str(uuid.uuid4()))
 
@@ -289,6 +411,32 @@ class TestApiv1(BaseTestCase):
         resp_pat = json.loads(resp_pat)
         did = resp_pat['email']
         self.assertEqual(patientid, did)
+        self.assertIn(pat_code, SUCCESS_STATUS_CODES)
+
+    def test_post_prescription(self):
+        visit = Visit(ENDPOINT)
+        headers = {
+            'content-type': 'application/json'}
+        logger.debug('before test_post_prescription')
+        # headers['token'] = self.admin_token
+        # headers['role'] = 'admin'
+        headers['token'] = self.doctor_token
+        headers['role'] = 'doctor'
+        # logger.debug('before patient get request')
+        # headers['token'] = self.pat_token
+        # headers['role'] = 'patient'
+        regprescription_data = {
+                'datetime':'20160101',
+                'drug_name':'drug1',
+                'after_meal':'yes',
+                'amount':'60',
+                'dosage_per_day':'2',
+                'description':'with water'
+                }
+        pat_code, resp_presc = visit.post(suffix_url='prescription/{}/{}'.format(
+            self.doctorid, self.patientid), headers=headers, data=regprescription_data)
+        logger.info('pat_code:{}, resp_presc:{}'.format(pat_code, resp_presc))
+        resp_presc = json.loads(resp_presc)
         self.assertIn(pat_code, SUCCESS_STATUS_CODES)
 
 
