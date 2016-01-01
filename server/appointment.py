@@ -28,7 +28,7 @@ def make_appointment(post_data):
     4. return if appointment exists, with reason if fail
 
     """
-    print(post_data)
+    # print(post_data)
     try:
         logger.debug('in make_appointment')
 
@@ -67,7 +67,7 @@ def get_appointment(appointment_url):
     :param appointment_url: appointment's url
     :returns: a status, a str ( appointment's info on success, err info on failure)
     """
-    print(appointment_url)
+    # print(appointment_url)
     info = {}
     try:
         logger.debug('in get_appointment')
@@ -93,7 +93,7 @@ def check_appointment(doctorid, date):
     :returns: a status, a str ( appointments timeslots info on success,
                                     err info on failure)
     """
-    print(doctorid, date)
+    # print(doctorid, date)
     # info = {}
     try:
         logger.debug('in check_appointment')

@@ -201,6 +201,44 @@ class PatientTest(unittest.TestCase):
         self.assertEqual('120', patient2.height)
         self.assertEqual('d2', patient2.doctor_in_charge)
 
+    def test_get_patient_billing(self):
+        patientid = '{}@hms.com'.format(str(uuid.uuid4()))
+        data = {
+                'email':patientid,
+                'firstname':'aaa',
+                'lastname':'bbb',
+                # 'billing':'cash'
+                }
+        status, did = register_patient(data)
+        status, patientinfo = get_patient(patientid)
+        self.assertTrue(status)
+        self.assertIn(patientid, patientinfo)
+        self.assertIn('billing', patientinfo)
+        self.assertIn('cash', patientinfo)
+
+    def test_edit_patient_billing(self):
+        patientid = '{}@hms.com'.format(str(uuid.uuid4()))
+        data = {
+                'email':patientid,
+                'firstname':'aaa',
+                'lastname':'bbb',
+                'billing':'cash'
+                }
+        status, patientid = register_patient(data)
+
+        self.assertTrue(status)
+
+        patient = PatientModel.get(PatientModel.email==patientid)
+        self.assertEqual('cash', patient.billing)
+
+        data2 = {
+                'billing': 'insurance'
+                }
+        status2, pid = edit_patient(patientid, data2)
+        patient2 = PatientModel.get(PatientModel.email==patientid)
+        self.assertTrue(status2)
+        self.assertEqual('insurance', patient2.billing)
+
 
 class AppointmentTest(unittest.TestCase):
 

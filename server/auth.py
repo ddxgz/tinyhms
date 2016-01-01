@@ -14,7 +14,7 @@ def authentication(role, post_data):
     :param post_data: dict
     :returns: a status, a str( patient's info on success, err info on failure)
     """
-    print(post_data)
+    # print(post_data)
     auth_dict = {}
     try:
         logger.debug('in register_patient')

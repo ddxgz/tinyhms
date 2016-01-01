@@ -462,13 +462,11 @@ class MakeAppointmentListener:
         """
         resp_dict = {}
         try:
-            username = req.get_header('username') or 'un'
-            password = req.get_header('password') or 'pw'
-            # post_data = req.params.get('data')
             # have pre-processed by JSONTranslator, post_data is a dict
             post_data = req.context['doc']
-            # logger.debug('username:%s, password:%s, data:%s'
-            #     % (username, password, post_data))
+            # authentication(req, ['admin', 'doctor', 'patient'],
+            #     doctorid=post_data['doctorid'], patientid=post_data['patientid'])
+
             # logger.debug('env:%s , \nstream:%s, \ncontext:, \ninput:' % (
             #     req.env, req.stream.read()))
         except Exception as ex:
@@ -513,16 +511,10 @@ class AppointmentListener:
         :returns: a json contains doctor's info
                 {"doctorid":'d001', "info":{"info1":''}}
         """
+        # authentication(req, ['admin', 'doctor', 'patient'],
+        #     doctorid=doctorid, patientid=doctorid)
+
         resp_dict = {}
-        try:
-            username = req.get_header('username') or 'un'
-            password = req.get_header('password') or 'pw'
-            # logger.debug('env:%s , \nstream:%s, \ncontext:, \ninput:' % (
-            #     req.env, req.stream.read()))
-        except Exception as ex:
-            logger.error('error when try to get headers and data, ', ex)
-            raise falcon.HTTPBadRequest('bad req',
-                'when read from req, please check if the req is correct.')
         try:
             """
             handle_request:
@@ -565,7 +557,6 @@ class AppointmentListener:
 
 class AppointmentListListener:
 
-
     def on_get(self, req, resp, doctorid, date):
         """
         Get info of a doctor in the system. The response data is in json format.
@@ -576,15 +567,6 @@ class AppointmentListListener:
                 {"doctorid":'d001', "info":{"info1":''}}
         """
         resp_dict = {}
-        try:
-            username = req.get_header('username') or 'un'
-            password = req.get_header('password') or 'pw'
-            # logger.debug('env:%s , \nstream:%s, \ncontext:, \ninput:' % (
-            #     req.env, req.stream.read()))
-        except Exception as ex:
-            logger.error('error when try to get headers and data, ', ex)
-            raise falcon.HTTPBadRequest('bad req',
-                'when read from req, please check if the req is correct.')
         try:
             """
             handle_request:
@@ -686,7 +668,6 @@ class AppointmentSinkAdapter(object):
                         indent=4)
 
 
-
 class PostObjListener:
 
     @falcon.before(max_body(64*1024))
@@ -701,9 +682,6 @@ class PostObjListener:
         """
         resp_dict = {}
         try:
-            username = req.get_header('username') or 'un'
-            password = req.get_header('password') or 'pw'
-            # post_data = req.params.get('data')
             # have pre-processed by JSONTranslator, post_data is a dict
             post_data = req.context['doc']
             # logger.debug('username:%s, password:%s, data:%s'
@@ -759,15 +737,6 @@ class ObjectListener:
         """
         resp_dict = {}
         try:
-            username = req.get_header('username') or 'un'
-            password = req.get_header('password') or 'pw'
-            # logger.debug('env:%s , \nstream:%s, \ncontext:, \ninput:' % (
-            #     req.env, req.stream.read()))
-        except Exception as ex:
-            logger.error('error when try to get headers and data, ', ex)
-            raise falcon.HTTPBadRequest('bad req',
-                'when read from req, please check if the req is correct.')
-        try:
             """
             handle_request:
 
@@ -808,15 +777,6 @@ class ObjectListener:
                 {"objid":'d001', "info":{"info1":''}}
         """
         resp_dict = {}
-        try:
-            username = req.get_header('username') or 'un'
-            password = req.get_header('password') or 'pw'
-            # logger.debug('env:%s , \nstream:%s, \ncontext:, \ninput:' % (
-            #     req.env, req.stream.read()))
-        except Exception as ex:
-            logger.error('error when try to get headers and data, ', ex)
-            raise falcon.HTTPBadRequest('bad req',
-                'when read from req, please check if the req is correct.')
         try:
             """
             handle_request:
@@ -861,20 +821,6 @@ class ObjectListListener:
                 {"patientid":'d001', "info":{"info1":''}}
         """
         resp_dict = {}
-        try:
-            username = req.get_header('username') or 'un'
-            password = req.get_header('password') or 'pw'
-            # post_data = req.params.get('data')
-            # have pre-processed by JSONTranslator, post_data is a dict
-            # post_data = req.context['doc']
-            # logger.debug('username:%s, password:%s, data:%s'
-            #     % (username, password, post_data))
-            # logger.debug('env:%s , \nstream:%s, \ncontext:, \ninput:' % (
-            #     req.env, req.stream.read()))
-        except Exception as ex:
-            logger.error('error when try to get headers and data, ', ex)
-            raise falcon.HTTPBadRequest('bad req',
-                'when read from req, please check if the req is correct.')
         try:
             """
             handle_request:

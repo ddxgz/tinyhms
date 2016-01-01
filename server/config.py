@@ -4,14 +4,14 @@ import logging
 from six.moves import configparser
 
 
-logging.basicConfig(level=logging.DEBUG,
-                format='[%(levelname)s] %(message)s [%(filename)s][line:%(lineno)d] %(asctime)s ',
-                datefmt='%d %b %Y %H:%M:%S')
+# logging.basicConfig(level=logging.DEBUG,
+#                 format='[%(levelname)s] %(message)s [%(filename)s][line:%(lineno)d] %(asctime)s ',
+#                 datefmt='%d %b %Y %H:%M:%S')
 
 
 class Config(object):
     def __init__(self, conf_file=None):
-        logging.debug('cwd:{}'.format(os.getcwd()))
+        # logging.debug('cwd:{}'.format(os.getcwd()))
         if conf_file:
             self.config_file = conf_file
             self._get_config(specified=True)
@@ -19,7 +19,7 @@ class Config(object):
             self._get_config()
 
     def _get_config(self, specified=False):
-        logging.debug('cwd:{}'.format(os.getcwd()))
+        # logging.debug('cwd:{}'.format(os.getcwd()))
         if specified is True:
             config_file = self.config_file
         else:
@@ -27,7 +27,7 @@ class Config(object):
                                      './configuration')
         config = configparser.ConfigParser()
         config.read(config_file)
-        
+
         if config.has_section('common'):
             #self.mq_host = config.get('common', 'mq_host')
             try:

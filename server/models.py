@@ -169,6 +169,7 @@ class PatientModel(BaseModel):
     doctor_in_charge = CharField()
     allergy = CharField()
     accompanied_by = CharField()
+    billing = CharField(max_length=30)
 
     class Meta:
         order_by = ('lastname',)
@@ -196,6 +197,7 @@ class PatientModel(BaseModel):
             doctor_in_charge = post_data.get('doctor_in_charge', '1'),
             allergy = post_data.get('allergy', '1'),
             accompanied_by = post_data.get('accompanied_by', '1'),
+            billing = post_data.get('billing', 'cash'),
             )
 
     @classmethod
@@ -224,6 +226,7 @@ class PatientModel(BaseModel):
             user_dict['doctor_in_charge'] = user.doctor_in_charge
             user_dict['allergy'] = user.allergy
             user_dict['accompanied_by'] = user.accompanied_by
+            user_dict['billing'] = user.billing
             logger.debug('after ger user: %s' % email)
             return user_dict
 
@@ -250,6 +253,7 @@ class PatientModel(BaseModel):
                 doctor_in_charge = post_data.get('doctor_in_charge', user.doctor_in_charge),
                 allergy = post_data.get('allergy', user.allergy),
                 accompanied_by = post_data.get('accompanied_by', user.accompanied_by),
+                billing = post_data.get('billing', user.billing),
                 ).where(PatientModel.email==email)
             q.execute()
 
