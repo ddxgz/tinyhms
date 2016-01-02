@@ -30,7 +30,7 @@ def create_tables(config, create_initdata=False):
     database = point_db(config)
     database.connect()
     database.create_tables([DoctorModel, PatientModel, ObjectModel,
-        PrescriptionModel, LoginModel], safe=True)
+        PrescriptionModel, CommentModel, LoginModel], safe=True)
     if create_initdata:
         pass
     return database
@@ -263,7 +263,8 @@ class ObjectModel(BaseModel):
         return ObjectModel.create(
             # uid=str(uuid.uuid4()),
             patient=user,
-            objid=patientid + '-' + post_data.get('objname')+ '-' + post_data['datetime'],
+            objid=patientid + '-' + post_data.get('objname')+ '-' + \
+                post_data.get('datetime', datetime.datetime.now().strftime('%Y%m%d%H%M%S')),
             objname=post_data.get('objname'),
             description=post_data.get('description', 'p'),
             datetime=post_data.get('datetime', datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
@@ -298,13 +299,45 @@ class PrescriptionModel(BaseModel):
             # uid=str(uuid.uuid4()),
             patient=user,
             response_doctor=doctorid,
-            drug_id=patientid + '-' + post_data.get('drug_name')+ '-' + post_data['datetime'],
+            drug_id=patientid + '-' + post_data.get('drug_name')+ '-' + \
+                post_data.get('datetime', datetime.datetime.now().strftime('%Y%m%d%H%M%S')),
             datetime=post_data.get('datetime', datetime.datetime.now().strftime('%Y%m%d%H%M%S')),
             drug_name=post_data.get('drug_name'),
             after_meal=post_data.get('after_meal'),
             amount=post_data.get('amount'),
             dosage_per_day=post_data.get('dosage_per_day'),
             description=post_data.get('description', ''),
+            )
+
+
+class CommentModel(BaseModel):
+    """
+
+    """
+    patient = ForeignKeyField(PatientModel)
+    comment_id = CharField(unique=True)
+    datetime = CharField(max_length=100)
+    comment = TextField()
+    response_doctor = CharField(max_length=200)
+
+    class Meta:
+        order_by = ('comment_id',)
+
+    def __str__(self):
+        return str(self.comment_id)
+
+    @classmethod
+    def create_by_dict(cls, patientid, doctorid, post_data):
+        user = PatientModel.get(PatientModel.email==patientid)
+        logger.debug(type(datetime.datetime.now().strftime('%Y%m%d%H%M%S')))
+        return CommentModel.create(
+            # uid=str(uuid.uuid4()),
+            patient=user,
+            response_doctor=doctorid,
+            comment_id=patientid + '-' + doctorid + '-' + \
+                post_data.get('datetime', datetime.datetime.now().strftime('%Y%m%d%H%M%S')),
+            datetime=post_data.get('datetime', datetime.datetime.now().strftime('%Y%m%d%H%M%S')),
+            comment=post_data.get('comment'),
             )
 
 

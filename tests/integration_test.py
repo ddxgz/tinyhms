@@ -413,7 +413,7 @@ class TestApiv1(BaseTestCase):
         self.assertEqual(patientid, did)
         self.assertIn(pat_code, SUCCESS_STATUS_CODES)
 
-    def test_post_prescription(self):
+    def test_prescription(self):
         visit = Visit(ENDPOINT)
         headers = {
             'content-type': 'application/json'}
@@ -462,6 +462,48 @@ class TestApiv1(BaseTestCase):
         self.assertIn(self.doctorid, resp_prescs)
         self.assertIn('drug1', resp_prescs)
         self.assertIn('drug2', resp_prescs)
+
+    def test_comment(self):
+        visit = Visit(ENDPOINT)
+        headers = {
+            'content-type': 'application/json'}
+        logger.debug('before test_comment')
+        # headers['token'] = self.admin_token
+        # headers['role'] = 'admin'
+        headers['token'] = self.doctor_token
+        headers['role'] = 'doctor'
+        # logger.debug('before patient get request')
+        # headers['token'] = self.pat_token
+        # headers['role'] = 'patient'
+        comment_data = {
+                'datetime':'20160101',
+                'comment':'drink water'
+                }
+        pat_code, resp_presc = visit.post(suffix_url='comment/{}/{}'.format(
+            self.doctorid, self.patientid), headers=headers, data=comment_data)
+        logger.info('pat_code:{}, resp_presc:{}'.format(pat_code, resp_presc))
+        self.assertIn(pat_code, SUCCESS_STATUS_CODES)
+        comment_data2 = {
+                'datetime':'20160102',
+                'comment':'eat drug'
+                }
+        pat_code, resp_presc = visit.post(suffix_url='comment/{}/{}'.format(
+            self.doctorid, self.patientid), headers=headers, data=comment_data2)
+        logger.info('pat_code:{}, resp_presc:{}'.format(pat_code, resp_presc))
+        self.assertIn(pat_code, SUCCESS_STATUS_CODES)
+
+        logger.debug('before test_get_comments')
+        headers['token'] = self.pat_token
+        headers['role'] = 'patient'
+
+        pat_code, resp_prescs = visit.get(suffix_url='comments/{}'.format(
+            self.patientid), headers=headers)
+        logger.info('pat_code:{}, resp_prescs:{}'.format(pat_code, resp_prescs))
+        # resp_prescs = json.loads(resp_prescs)
+        self.assertIn(pat_code, SUCCESS_STATUS_CODES)
+        self.assertIn(self.doctorid, resp_prescs)
+        self.assertIn('drink water', resp_prescs)
+        self.assertIn('drink water', resp_prescs)
 
 
 if __name__ == '__main__':
