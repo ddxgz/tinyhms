@@ -8,7 +8,8 @@ import functools
 
 import falcon
 
-from server import doctor, patient, appointment, obj, prescription, comment, auth
+from server import doctor, patient, appointment, obj, prescription, comment, \
+    discharge, auth
 from server import rediscli
 from server.utils import logger
 
@@ -1039,7 +1040,157 @@ class CommentListListener:
                 resp.body = json.dumps(comment_list)
             else:
                 logger.exception('return error when try to get comments, ', ex)
-                resp_dict['errinfo'] = 'Error when get comments {}'
+                resp_dict['errinfo'] = 'Error when get comments'
+                resp.status = falcon.HTTP_400
+                resp.body = json.dumps(resp_dict)
+                # resp.body = json.dumps(resp_dict, sort_keys=True,
+                #     indent=4)
+
+
+class PostDischargeListener:
+
+    @falcon.before(max_body(64*1024))
+    def on_post(self, req, resp, doctorid, patientid):
+        """
+        Register a doctor in the system. The post data is in json format.
+
+        :param req.header.username: username
+        :param req.header.password: password
+        :returns: a json contains patient's id, or other related info
+                {"patientid":'d001', "info":{"info1":''}}
+        """
+        resp_dict = {}
+        try:
+            # have pre-processed by JSONTranslator, post_data is a dict
+            post_data = req.context['doc']
+            # logger.debug('env:%s , \nstream:%s, \ncontext:, \ninput:' % (
+            #     req.env, req.stream.read()))
+        except Exception as ex:
+            logger.error('error when try to get headers and data, ', ex)
+            raise falcon.HTTPBadRequest('bad req',
+                'when read from req, please check if the req is correct.')
+        try:
+            """
+            handle_request:
+
+            """
+            status, discharge_dict = discharge.upload_discharge(
+                        patientid, doctorid, post_data)
+        except Exception as ex:
+            logger.exception('error when post discharge, ', ex)
+            resp_dict['info'] = 'Error when post discharge {}'.format(
+                'obj')
+            resp.status = falcon.HTTP_500
+            resp.body = json.dumps(resp_dict, sort_keys=True, indent=4)
+        else:
+            if status:
+                logger.debug('post discharge ok, status positive')
+                # resp_dict['info'] = 'Register patient {} success'.format(
+                #     'obj')
+                # resp_dict['objid'] = objid
+                # resp.status = status or falcon.HTTP_200
+                resp.status = falcon.HTTP_201
+                resp.body = json.dumps(discharge_dict)
+            else:
+                logger.exception('return error when try to post discharge, ', ex)
+                resp_dict['errinfo'] = 'Error when post discharge {}'.format(
+                    'obj')
+                resp.status = falcon.HTTP_400
+                resp.body = json.dumps(resp_dict)
+                # resp.body = json.dumps(resp_dict, sort_keys=True,
+                #     indent=4)
+
+
+class DischargeListener:
+
+    @falcon.before(max_body(64*1024))
+    def on_put(self, req, resp, doctorid, patientid, indate):
+        """
+        Register a doctor in the system. The post data is in json format.
+
+        :param req.header.username: username
+        :param req.header.password: password
+        :returns: a json contains patient's id, or other related info
+                {"patientid":'d001', "info":{"info1":''}}
+        """
+        resp_dict = {}
+        try:
+            # have pre-processed by JSONTranslator, post_data is a dict
+            post_data = req.context['doc']
+            # logger.debug('env:%s , \nstream:%s, \ncontext:, \ninput:' % (
+            #     req.env, req.stream.read()))
+        except Exception as ex:
+            logger.error('error when try to get headers and data, ', ex)
+            raise falcon.HTTPBadRequest('bad req',
+                'when read from req, please check if the req is correct.')
+        try:
+            """
+            handle_request:
+
+            """
+            status, discharge_dict = discharge.update_discharge(
+                        patientid, doctorid, indate, post_data)
+        except Exception as ex:
+            logger.exception('error when post discharge, ', ex)
+            resp_dict['info'] = 'Error when post discharge {}'.format(
+                'obj')
+            resp.status = falcon.HTTP_500
+            resp.body = json.dumps(resp_dict, sort_keys=True, indent=4)
+        else:
+            if status:
+                logger.debug('put discharge ok, status positive')
+                # resp_dict['info'] = 'Register patient {} success'.format(
+                #     'obj')
+                # resp_dict['objid'] = objid
+                # resp.status = status or falcon.HTTP_200
+                resp.status = falcon.HTTP_200
+                resp.body = json.dumps(discharge_dict)
+            else:
+                logger.exception('return error when try to post discharge, ', ex)
+                resp_dict['errinfo'] = 'Error when post discharge {}'.format(
+                    'obj')
+                resp.status = falcon.HTTP_400
+                resp.body = json.dumps(resp_dict)
+                # resp.body = json.dumps(resp_dict, sort_keys=True,
+                #     indent=4)
+
+
+class DischargeListListener:
+
+    def on_get(self, req, resp, patientid):
+        """
+        Get info of a patient in the system. The response data is in json format.
+
+        :param req.header.username: username
+        :param req.header.password: password
+        :returns: a json contains doctor's info
+                {"patientid":'d001', "info":{"info1":''}}
+        """
+        resp_dict = {}
+        try:
+            """
+            handle_request:
+
+            """
+            status, discharge_list = discharge.get_discharges(patientid)
+        except Exception as ex:
+            logger.exception('error when get discharges, ', ex)
+            resp_dict['info'] = 'Error when get discharges {}'.format(
+                'obj')
+            resp.status = falcon.HTTP_500
+            resp.body = json.dumps(resp_dict, sort_keys=True, indent=4)
+        else:
+            if status:
+                logger.debug('get discharges ok, status positive')
+                # resp_dict['info'] = 'Register {} success'.format(
+                #     'obj')
+                # resp_dict['objid'] = objid
+                # resp.status = status or falcon.HTTP_200
+                resp.status = falcon.HTTP_200
+                resp.body = json.dumps(discharge_list)
+            else:
+                logger.exception('return error when try to get discharges, ', ex)
+                resp_dict['errinfo'] = 'Error when get discharges'
                 resp.status = falcon.HTTP_400
                 resp.body = json.dumps(resp_dict)
                 # resp.body = json.dumps(resp_dict, sort_keys=True,

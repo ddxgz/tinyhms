@@ -93,7 +93,8 @@ if conf.api_version == "1":
         PatientListener, MakeAppointmentListener, AppointmentListener, \
         AppointmentListListener, AppointmentSinkAdapter, PostObjListener, ObjectListener, \
         ObjectListListener, AuthListener, PostPrescriptionListener, PrescriptionListListener, \
-        PostCommentListener, CommentListListener
+        PostCommentListener, CommentListListener, PostDischargeListener, DischargeListener, \
+        DischargeListListener
 
 # elif conf.api_version is "2":
 #     from apiv2 import HomeListener, AccountListener, \
@@ -127,6 +128,10 @@ prescription_list_listener = PrescriptionListListener()
 post_comment_listener = PostCommentListener()
 comment_list_listener = CommentListListener()
 
+post_discharge_listener = PostDischargeListener()
+discharge_list_listener = DischargeListListener()
+discharge_listener = DischargeListener()
+
 auth_listener = AuthListener()
 
 app.add_route('/v1/appointment', make_appointment_listener)
@@ -150,6 +155,10 @@ app.add_route('/v1/prescriptions/{patientid}', prescription_list_listener)
 
 app.add_route('/v1/comment/{doctorid}/{patientid}', post_comment_listener)
 app.add_route('/v1/comments/{patientid}', comment_list_listener)
+
+app.add_route('/v1/discharge/{doctorid}/{patientid}', post_discharge_listener)
+app.add_route('/v1/discharge/{doctorid}/{patientid}/{indate}', discharge_listener)
+app.add_route('/v1/discharges/{patientid}', discharge_list_listener)
 
 app.add_route('/v1/auth/{role}', auth_listener)
 

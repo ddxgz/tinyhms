@@ -30,7 +30,7 @@ def create_tables(config, create_initdata=False):
     database = point_db(config)
     database.connect()
     database.create_tables([DoctorModel, PatientModel, ObjectModel,
-        PrescriptionModel, CommentModel, LoginModel], safe=True)
+        PrescriptionModel, CommentModel, DischargeModel, LoginModel], safe=True)
     if create_initdata:
         pass
     return database
@@ -339,6 +339,57 @@ class CommentModel(BaseModel):
             datetime=post_data.get('datetime', datetime.datetime.now().strftime('%Y%m%d%H%M%S')),
             comment=post_data.get('comment'),
             )
+
+
+class DischargeModel(BaseModel):
+    """
+
+    """
+    patient = ForeignKeyField(PatientModel)
+    discharge_id = CharField(unique=True)
+    datetime = CharField(max_length=100)
+    indate = CharField(max_length=100)
+    outdate = CharField(max_length=100)
+    response_doctor = CharField(max_length=200)
+    description = TextField()
+
+    class Meta:
+        order_by = ('discharge_id',)
+
+    def __str__(self):
+        return str(self.discharge_id)
+
+    @classmethod
+    def create_by_dict(cls, patientid, doctorid, post_data):
+        user = PatientModel.get(PatientModel.email==patientid)
+        logger.debug(type(datetime.datetime.now().strftime('%Y%m%d%H%M%S')))
+        return DischargeModel.create(
+            # uid=str(uuid.uuid4()),
+            patient=user,
+            response_doctor=doctorid,
+            discharge_id=patientid + '-' + doctorid + '-' + \
+                post_data.get('indate', datetime.datetime.now().strftime('%Y%m%d%H%M%S')),
+            datetime=post_data.get('datetime', datetime.datetime.now().strftime('%Y%m%d%H%M%S')),
+            indate=post_data.get('indate'),
+            outdate=post_data.get('outdate', 'not yet'),
+            description=post_data.get('description', ''),
+            )
+
+    @classmethod
+    def update_by_dict(cls, patientid, doctorid, indate, post_data):
+        discharge = DischargeModel.get(DischargeModel.discharge_id==patientid + '-' + doctorid + '-' + \
+            indate)
+        with database.atomic():
+            q = DischargeModel.update(
+                indate=discharge.indate,
+                outdate=post_data.get('outdate', ''),
+                response_doctor=post_data.get('response_doctor', discharge.response_doctor),
+                description = post_data.get('description', discharge.description),
+
+                datetime=post_data.get('datetime', datetime.datetime.now().strftime('%Y%m%d%H%M%S')),
+                ).where(DischargeModel.discharge_id==patientid + '-' + doctorid + '-' + \
+                    indate)
+            q.execute()
 
 
 class LoginModel(BaseModel):
