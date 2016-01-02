@@ -92,7 +92,7 @@ if conf.api_version == "1":
     from server.apiv1 import RegDoctorListener, DoctorListener, RegPatientListener, \
         PatientListener, MakeAppointmentListener, AppointmentListener, \
         AppointmentListListener, AppointmentSinkAdapter, PostObjListener, ObjectListener, \
-        ObjectListListener, AuthListener, PostPrescriptionListener
+        ObjectListListener, AuthListener, PostPrescriptionListener, PrescriptionListListener
 
 # elif conf.api_version is "2":
 #     from apiv2 import HomeListener, AccountListener, \
@@ -121,6 +121,7 @@ obj_listener = ObjectListener()
 objlist_listener = ObjectListListener()
 
 post_prescription_listener = PostPrescriptionListener()
+prescription_list_listener = PrescriptionListListener()
 
 auth_listener = AuthListener()
 
@@ -141,6 +142,7 @@ app.add_route('/v1/objs/{patientid}', objlist_listener)
 app.add_route('/v1/obj/{patientid}/{objid}', obj_listener)
 
 app.add_route('/v1/prescription/{doctorid}/{patientid}', post_prescription_listener)
+app.add_route('/v1/prescriptions/{patientid}', prescription_list_listener)
 
 app.add_route('/v1/auth/{role}', auth_listener)
 

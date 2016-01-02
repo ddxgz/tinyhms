@@ -881,7 +881,7 @@ class PostPrescriptionListener:
 
             """
             status, prescription_dict = prescription.upload_prescription(
-                        patientid, post_data)
+                        patientid, doctorid, post_data)
         except Exception as ex:
             logger.exception('error when post prescription, ', ex)
             resp_dict['info'] = 'Error when post prescription {}'.format(
@@ -907,91 +907,6 @@ class PostPrescriptionListener:
                 #     indent=4)
 
 
-class PrescriptionListener:
-
-    def on_get(self, req, resp, patientid, objid):
-        """
-        Get info of a patient in the system. The response data is in json format.
-
-        :param req.header.username: username
-        :param req.header.password: password
-        :returns: a json contains doctor's info
-                {"objid":'d001', "info":{"info1":''}}
-        """
-        resp_dict = {}
-        try:
-            """
-            handle_request:
-
-            """
-            status, obj_dict = obj.get_obj(patientid, objid)
-
-        except Exception as ex:
-            logger.exception('error when get object, ', ex)
-            resp_dict['errinfo'] = 'Error when get patietn:{} object {}'.format(
-                patientid, objid)
-            resp.status = falcon.HTTP_500
-            resp.body = json.dumps(resp_dict, sort_keys=True, indent=4)
-        else:
-            if status:
-                logger.debug('get ok, status positive')
-                # resp_dict['info'] = 'Register patient {} success'.format(
-                #     'obj')
-                # resp_dict['objid'] = objid
-                # resp.status = status or falcon.HTTP_200
-                resp.status = falcon.HTTP_200
-                resp.body = json.dumps(obj_dict)
-            else:
-                logger.exception('return error when try to get object, ', ex)
-                resp_dict['errinfo'] = 'Error when get patietn:{} object {}'.format(
-                    patientid, objid)
-                resp.status = falcon.HTTP_400
-                resp.body = json.dumps(resp_dict)
-                # resp.body = json.dumps(resp_dict, sort_keys=True,
-                #     indent=4)
-
-    def on_delete(self, req, resp, patientid, objid):
-        """
-        Get info of a patient in the system. The response data is in json format.
-
-        :param req.header.username: username
-        :param req.header.password: password
-        :returns: a json contains doctor's info
-                {"objid":'d001', "info":{"info1":''}}
-        """
-        resp_dict = {}
-        try:
-            """
-            handle_request:
-
-            """
-            status, obj_dict = obj.delete_obj(patientid, objid)
-
-        except Exception as ex:
-            logger.exception('error when delete object, ', ex)
-            resp_dict['errinfo'] = 'Error when delete patietn:{} object {}'.format(
-                patientid, objid)
-            resp.status = falcon.HTTP_500
-            resp.body = json.dumps(resp_dict, sort_keys=True, indent=4)
-        else:
-            if status:
-                logger.debug('delete ok, status positive')
-                # resp_dict['info'] = 'Register patient {} success'.format(
-                #     'obj')
-                # resp_dict['objid'] = objid
-                # resp.status = status or falcon.HTTP_200
-                resp.status = falcon.HTTP_204
-                resp.body = json.dumps(obj_dict)
-            else:
-                logger.exception('return error when try to delete object, ', ex)
-                resp_dict['errinfo'] = 'Error when delete patietn:{} object {}'.format(
-                    patientid, objid)
-                resp.status = falcon.HTTP_400
-                resp.body = json.dumps(resp_dict)
-                # resp.body = json.dumps(resp_dict, sort_keys=True,
-                #     indent=4)
-
-
 class PrescriptionListListener:
 
     def on_get(self, req, resp, patientid):
@@ -1009,27 +924,26 @@ class PrescriptionListListener:
             handle_request:
 
             """
-            status, objs_dict_list = obj.get_objs(patientid)
-
+            status, prescription_list = prescription.get_prescriptions(
+                        patientid)
         except Exception as ex:
-            logger.exception('error when get objs, ', ex)
-            resp_dict['info'] = 'Error when get objs {}'.format(
+            logger.exception('error when get prescriptions, ', ex)
+            resp_dict['info'] = 'Error when get prescriptions {}'.format(
                 'obj')
             resp.status = falcon.HTTP_500
             resp.body = json.dumps(resp_dict, sort_keys=True, indent=4)
         else:
             if status:
-                logger.debug('get objs ok, status positive')
+                logger.debug('get prescriptions ok, status positive')
                 # resp_dict['info'] = 'Register {} success'.format(
                 #     'obj')
                 # resp_dict['objid'] = objid
                 # resp.status = status or falcon.HTTP_200
                 resp.status = falcon.HTTP_200
-                resp.body = json.dumps(objs_dict_list)
+                resp.body = json.dumps(prescription_list)
             else:
-                logger.exception('return error when try to get objs, ', ex)
-                resp_dict['errinfo'] = 'Error when get objs {}'.format(
-                    'obj')
+                logger.exception('return error when try to get prescriptions, ', ex)
+                resp_dict['errinfo'] = 'Error when get prescriptions {}'
                 resp.status = falcon.HTTP_400
                 resp.body = json.dumps(resp_dict)
                 # resp.body = json.dumps(resp_dict, sort_keys=True,

@@ -436,8 +436,32 @@ class TestApiv1(BaseTestCase):
         pat_code, resp_presc = visit.post(suffix_url='prescription/{}/{}'.format(
             self.doctorid, self.patientid), headers=headers, data=regprescription_data)
         logger.info('pat_code:{}, resp_presc:{}'.format(pat_code, resp_presc))
-        resp_presc = json.loads(resp_presc)
         self.assertIn(pat_code, SUCCESS_STATUS_CODES)
+        regprescription_data2 = {
+                'datetime':'20160102',
+                'drug_name':'drug2',
+                'after_meal':'yes',
+                'amount':'10',
+                'dosage_per_day':'1',
+                'description':'with water'
+                }
+        pat_code, resp_presc = visit.post(suffix_url='prescription/{}/{}'.format(
+            self.doctorid, self.patientid), headers=headers, data=regprescription_data2)
+        logger.info('pat_code:{}, resp_presc:{}'.format(pat_code, resp_presc))
+        self.assertIn(pat_code, SUCCESS_STATUS_CODES)
+
+        logger.debug('before test_get_prescriptions')
+        headers['token'] = self.pat_token
+        headers['role'] = 'patient'
+
+        pat_code, resp_prescs = visit.get(suffix_url='prescriptions/{}'.format(
+            self.patientid), headers=headers)
+        logger.info('pat_code:{}, resp_prescs:{}'.format(pat_code, resp_prescs))
+        # resp_prescs = json.loads(resp_prescs)
+        self.assertIn(pat_code, SUCCESS_STATUS_CODES)
+        self.assertIn(self.doctorid, resp_prescs)
+        self.assertIn('drug1', resp_prescs)
+        self.assertIn('drug2', resp_prescs)
 
 
 if __name__ == '__main__':

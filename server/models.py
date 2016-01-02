@@ -281,6 +281,7 @@ class PrescriptionModel(BaseModel):
     after_meal = CharField(max_length=10)
     amount = IntegerField()
     dosage_per_day = IntegerField()
+    response_doctor = CharField(max_length=200)
     description = TextField()
 
     class Meta:
@@ -290,12 +291,13 @@ class PrescriptionModel(BaseModel):
         return str(self.drug_id)
 
     @classmethod
-    def create_by_dict(cls, patientid, post_data):
+    def create_by_dict(cls, patientid, doctorid, post_data):
         user = PatientModel.get(PatientModel.email==patientid)
         logger.debug(type(datetime.datetime.now().strftime('%Y%m%d%H%M%S')))
         return PrescriptionModel.create(
             # uid=str(uuid.uuid4()),
             patient=user,
+            response_doctor=doctorid,
             drug_id=patientid + '-' + post_data.get('drug_name')+ '-' + post_data['datetime'],
             datetime=post_data.get('datetime', datetime.datetime.now().strftime('%Y%m%d%H%M%S')),
             drug_name=post_data.get('drug_name'),
