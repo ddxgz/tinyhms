@@ -348,6 +348,8 @@ class DischargeModel(BaseModel):
     patient = ForeignKeyField(PatientModel)
     discharge_id = CharField(unique=True)
     datetime = CharField(max_length=100)
+    room = CharField(max_length=100)
+    bed = CharField(max_length=100)
     indate = CharField(max_length=100)
     outdate = CharField(max_length=100)
     response_doctor = CharField(max_length=200)
@@ -371,6 +373,8 @@ class DischargeModel(BaseModel):
                 post_data.get('indate', datetime.datetime.now().strftime('%Y%m%d%H%M%S')),
             datetime=post_data.get('datetime', datetime.datetime.now().strftime('%Y%m%d%H%M%S')),
             indate=post_data.get('indate'),
+            room=post_data.get('room'),
+            bed=post_data.get('bed'),
             outdate=post_data.get('outdate', 'not yet'),
             description=post_data.get('description', ''),
             )
@@ -384,6 +388,8 @@ class DischargeModel(BaseModel):
                 indate=discharge.indate,
                 outdate=post_data.get('outdate', ''),
                 response_doctor=post_data.get('response_doctor', discharge.response_doctor),
+                room = post_data.get('room', discharge.room),
+                bed = post_data.get('bed', discharge.bed),
                 description = post_data.get('description', discharge.description),
 
                 datetime=post_data.get('datetime', datetime.datetime.now().strftime('%Y%m%d%H%M%S')),

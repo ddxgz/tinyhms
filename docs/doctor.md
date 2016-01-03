@@ -5,13 +5,13 @@
 
 ```
 {
-        'firstname':'',
-        'lastname':'',
-        'qualification':'',
-        'profession': 'xxx',
-        'experience':'',
-        'gender':'',
-        'schedule':'',
+        "firstname":"",
+        "lastname":"",
+        "qualification":"",
+        "profession": "xxx",
+        "experience":"",
+        "gender":"",
+        "schedule":"",
 
 }
 ```
@@ -27,11 +27,11 @@
 ```
 {
 
-        'qualification':'',
-        'profession': 'xxx',
-        'experience':'',
-        'gender':'',
-        'schedule':'',
+        "qualification":"",
+        "profession": "xxx",
+        "experience":"",
+        "gender":"",
+        "schedule":"",
 }
 ```
 

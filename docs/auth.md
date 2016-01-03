@@ -5,12 +5,14 @@ Post request with username and password to certain api for a certain role, retur
 
 ### POST `/v1/auth/{admin}`
 > post with data like this:
+
 ```
 {
-    'username':'d001',
-    'password':'201511201300'
+    "username":"d001",
+    "password":"201511201300"
 }
 ```
+
 > returns if the access token or 0 on failure
 
 ## Login as Doctor
@@ -19,22 +21,28 @@ Post request with username and password to certain api for a certain role, retur
 > post with data like this:
 ```
 {
-    'username':'d001',
-    'password':'201511201300'
+    "username":"d001",
+    "password":"201511201300"
 }
 ```
 > returns if the access token or 0 on failure
 
->> in redis,
 
 ## Login as Patient
 
 ### POST `/v1/auth/patient`
 > post with data like this:
+
 ```
 {
-    'username':'d001',
-    'password':'201511201300'
+    "username":"d001",
+    "password":"201511201300"
 }
 ```
 > returns if the access token or 0 on failure
+
+# Authentication when make requests
+Send requests with headers include:
+> "token":token_from_auth
+
+> "role":the_role_when_you_auth

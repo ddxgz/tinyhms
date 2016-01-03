@@ -7,10 +7,10 @@ A patient can only have one appointment on one day. If need to modify an appoint
 > to make an appointment, post with data like this:
 ```
 {
-    'doctorid':'d001',
-    'datetimeslot':'201511201300',
-    'patientid':'p001',
-    'illness': 'xxx',
+    "doctorid":"d001",
+    "datetimeslot":"201511201300",
+    "patientid":"p001",
+    "illness": "xxx",
 }
 ```
 > returns if the action success
@@ -24,8 +24,8 @@ A patient can only have one appointment on one day. If need to modify an appoint
 >
 ```
 {
-    '1300':'1',
-    '1430':'0',
+    "1300":"1",
+    "1430":"1",
     ...
 }
 ```
