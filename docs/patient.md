@@ -1,6 +1,6 @@
 
 
-### POST /v1/patient
+### POST `/v1/patient`
 > to register a patient, post with data like this:
 ```
 {
@@ -25,11 +25,11 @@
 > returns a patient ID
 
 
-### GET /v1/patient/patientid
+### GET `/v1/patient/patientid`
 > to get info of a patient
 
 
-### PUT /v1/patient/patientid
+### PUT `/v1/patient/patientid`
 > to edit info of a patient
 ```
 {
@@ -52,5 +52,5 @@
 }
 ```
 
-### DELETE /v1/patient/patientid
+### DELETE `/v1/patient/patientid`
 > to delete info of a doctor

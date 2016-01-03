@@ -16,7 +16,7 @@ A patient can only have one appointment on one day. If need to modify an appoint
 > returns if the action success
 
 
-## Look up an Appointment
+## Look up Appointments of a doctor on a day
 
 ### GET `/v1/appointment/doctorid/date`
 > such as /v1/appointment/20151205

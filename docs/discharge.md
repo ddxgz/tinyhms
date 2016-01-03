@@ -3,7 +3,7 @@ A doctor can make discharge information on a patient
 
 ## Make a Discharge info
 
-### POST /v1/discharge/{doctorid}/{patientid}
+### POST `/v1/discharge/{doctorid}/{patientid}`
 > to make discharge info of a patient, post with data like this:
 ```
 {
@@ -19,7 +19,7 @@ A doctor can make discharge information on a patient
 
 
 ## Edit discharge info of a patient
-### PUT /v1/discharge/{doctorid}/{patientid}/{indate}
+### PUT `/v1/discharge/{doctorid}/{patientid}/{indate}`
 > to edit info of a doctor
 
 ```
@@ -35,5 +35,5 @@ A doctor can make discharge information on a patient
 
 ## Get Discharges of a patient
 
-### GET /v1/discharges/{patientid}
+### GET `/v1/discharges/{patientid}`
 > to get all discharges of a patient

@@ -1,5 +1,5 @@
 
-### POST /v1/doctor
+### POST `/v1/doctor`
 
 > Administrator only. Need a unique employee id to avoid duplicated registration. To register a doctor, post with data like this:
 
@@ -17,11 +17,11 @@
 ```
 > returns a doctor ID
 
-### GET /v1/doctor/doctorid
+### GET `/v1/doctor/doctorid`
 > to get info of a doctor
 
 
-### PUT /v1/doctor/doctorid
+### PUT `/v1/doctor/doctorid`
 > to edit info of a doctor
 
 ```
@@ -37,5 +37,5 @@
 
 
 
-### DELETE /v1/doctor/doctorid
+### DELETE `/v1/doctor/doctorid`
 > to delete info of a doctor

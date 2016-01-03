@@ -3,7 +3,7 @@ A doctor can make prescriptions on a patient
 
 ## Make a Prescription
 
-### POST /v1/prescription/{doctorid}/{patientid}
+### POST `/v1/prescription/{doctorid}/{patientid}`
 > to make a prescription on a patient, post with data like this:
 ```
 {
@@ -19,5 +19,5 @@ A doctor can make prescriptions on a patient
 
 ## Get Prescriptions of a patient
 
-### GET /v1/prescriptions/{patientid}
+### GET `/v1/prescriptions/{patientid}`
 > to get all prescriptions of a patient
