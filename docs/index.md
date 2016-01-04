@@ -52,10 +52,10 @@ TODO
 - Filter characters like space and other unwanted characters from requests data
 - Expire time of token
 - Encryption auth data
-- Need a unique employee id to avoid duplicated registration.
-- use a separated user auth module (may use the swift's tempauth like method, which uses memcache to store token, set a expire time on each token, or the auth middleware <https://github.com/talons/talons>)
-- functest, probtest, unittest
-- deal with the security of password storing and transferring
+- ~~Need a unique employee id to avoid duplicated registration.~~
+- ~~use a separated user auth module (may use the swift's tempauth like method, which uses memcache to store token, set a expire time on each token, or the auth middleware <https://github.com/talons/talons>)~~
+- ~~functest, probtest, unittest~~
+- ~~deal with the security of password storing and transferring~~
 
 
 BUG
@@ -73,4 +73,14 @@ Requirements
 - Gunicorn
 - Falcon >= 0.3.0
 - peewee >= 2.6.1
+- swiftclient >= 2.7.0
+- Six >= 1.9
+
+Test Requirements
+---------------
+- Python >= 2.7 or 3.4
+- Falcon >= 0.3.0
+- peewee >= 2.6.1
+- swiftclient >= 2.7.0
+- requests >= 2.8.1
 - Six >= 1.9
