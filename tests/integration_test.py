@@ -563,57 +563,71 @@ class TestApiv1(BaseTestCase):
         self.assertIn('20151111', resp_prescs)
         self.assertIn('9', resp_prescs)
 
-    # def test_appointment(self):
-    #     visit = Visit(ENDPOINT)
-    #     headers = {
-    #         'content-type': 'application/json'}
-    #     logger.debug('before test_appointment')
-    #     # headers['token'] = self.admin_token
-    #     # headers['role'] = 'admin'
-    #     headers['token'] = self.doctor_token
-    #     headers['role'] = 'doctor'
-    #     # logger.debug('before patient get request')
-    #     # headers['token'] = self.pat_token
-    #     # headers['role'] = 'patient'
-    #     comment_data = {
-    #             'datetime':'20160101',
-    #             'indate':'20151111'
-    #             }
-    #     pat_code, resp_presc = visit.post(suffix_url='discharge/{}/{}'.format(
-    #         self.doctorid, self.patientid), headers=headers, data=comment_data)
-    #     logger.info('pat_code:{}, resp_presc:{}'.format(pat_code, resp_presc))
-    #     self.assertIn(pat_code, SUCCESS_STATUS_CODES)
-    #     comment_data2 = {
-    #             'datetime':'20160102',
-    #             'indate':'20151212'
-    #             }
-    #     pat_code, resp_presc = visit.post(suffix_url='discharge/{}/{}'.format(
-    #         self.doctorid, self.patientid), headers=headers, data=comment_data2)
-    #     logger.info('pat_code:{}, resp_presc:{}'.format(pat_code, resp_presc))
-    #     self.assertIn(pat_code, SUCCESS_STATUS_CODES)
-    #
-    #     comment_data3 = {
-    #             'datetime':'20160201',
-    #             'outdate':'20160202',
-    #             'description':'well'
-    #             }
-    #     pat_code, resp_presc = visit.put(suffix_url='discharge/{}/{}/{}'.format(
-    #         self.doctorid, self.patientid, '20151212'), headers=headers, data=comment_data3)
-    #     logger.info('pat_code:{}, resp_presc:{}'.format(pat_code, resp_presc))
-    #     self.assertIn(pat_code, SUCCESS_STATUS_CODES)
-    #
-    #     # logger.debug('before test_appointment')
-    #     headers['token'] = self.pat_token
-    #     headers['role'] = 'patient'
-    #
-    #     pat_code, resp_prescs = visit.get(suffix_url='discharges/{}'.format(
-    #         self.patientid), headers=headers)
-    #     logger.info('pat_code:{}, resp_prescs:{}'.format(pat_code, resp_prescs))
-    #     # resp_prescs = json.loads(resp_prescs)
-    #     self.assertIn(pat_code, SUCCESS_STATUS_CODES)
-    #     self.assertIn(self.doctorid, resp_prescs)
-    #     self.assertIn('20160202', resp_prescs)
-    #     self.assertIn('20151111', resp_prescs)
+    def test_appointment(self):
+        visit = Visit(ENDPOINT)
+        headers = {
+            'content-type': 'application/json'}
+        logger.debug('before test_appointment')
+        # headers['token'] = self.admin_token
+        # headers['role'] = 'admin'
+        headers['token'] = self.doctor_token
+        headers['role'] = 'doctor'
+        # logger.debug('before patient get request')
+        # headers['token'] = self.pat_token
+        # headers['role'] = 'patient'
+        apmt_data = {
+                'doctorid':self.doctorid,
+                'patientid':self.patientid,
+                'datetimeslot':'201511111300',
+                'illness':'headache'
+                }
+        pat_code, resp_presc = visit.post(suffix_url='appointment', headers=headers, data=apmt_data)
+        logger.info('pat_code:{}, resp_presc:{}'.format(pat_code, resp_presc))
+        self.assertIn(pat_code, SUCCESS_STATUS_CODES)
+
+        pat_code, resp_prescs = visit.get(suffix_url='appointment/{}/{}/{}'.format(
+            self.doctorid, '201511111300',self.patientid), headers=headers)
+        logger.info('pat_code:{}, resp_prescs:{}'.format(pat_code, resp_prescs))
+        # resp_prescs = json.loads(resp_prescs)
+        self.assertIn(pat_code, SUCCESS_STATUS_CODES)
+        self.assertIn('headache', resp_prescs)
+
+        apmt_data = {
+                'doctorid':self.doctorid,
+                'patientid':self.patientid,
+                'datetimeslot':'201511111430',
+                'illness':'cold'
+                }
+        pat_code, resp_presc = visit.post(suffix_url='appointment', headers=headers, data=apmt_data)
+        logger.info('pat_code:{}, resp_presc:{}'.format(pat_code, resp_presc))
+        self.assertIn(pat_code, SUCCESS_STATUS_CODES)
+
+
+        # logger.debug('before test_appointment')
+        headers['token'] = self.pat_token
+        headers['role'] = 'patient'
+
+        pat_code, resp_prescs = visit.get(suffix_url='appointment/{}/{}'.format(
+            self.doctorid, '20151111'), headers=headers)
+        logger.info('pat_code:{}, resp_prescs:{}'.format(pat_code, resp_prescs))
+        resp_prescs = json.loads(resp_prescs)
+        self.assertIn(pat_code, SUCCESS_STATUS_CODES)
+        self.assertIn('1', resp_prescs['1300'])
+        self.assertIn('1', resp_prescs['1430'])
+
+        pat_code, resp_prescs = visit.delete(suffix_url='appointment/{}/{}/{}'.format(
+            self.doctorid, '201511111300',self.patientid), headers=headers)
+        logger.info('pat_code:{}, resp_presc:{}'.format(pat_code, resp_presc))
+        self.assertIn(pat_code, SUCCESS_STATUS_CODES)
+
+        pat_code, resp_prescs = visit.get(suffix_url='appointment/{}/{}'.format(
+            self.doctorid, '20151111'), headers=headers)
+        logger.info('pat_code:{}, resp_prescs:{}'.format(pat_code, resp_prescs))
+        # resp_prescs = json.loads(resp_prescs)
+        self.assertIn(pat_code, SUCCESS_STATUS_CODES)
+        self.assertNotIn('1300', resp_prescs)
+        resp_prescs = json.loads(resp_prescs)
+        self.assertIn('1', resp_prescs['1430'])
 
 
 if __name__ == '__main__':

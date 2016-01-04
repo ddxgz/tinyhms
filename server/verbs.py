@@ -224,11 +224,23 @@ class Visit():
         return code, page
 
     def delete(self, suffix_url='', headers=None, data=None):
-        req = urllib2.Request(self.baseurl+suffix_url, headers=headers,
+        # req = urllib2.Request(self.baseurl+suffix_url, headers=headers,
+        #     data=data)
+        # req.get_method = lambda: 'DELETE'
+        # resp = urllib2.urlopen(req)
+        # page = resp.read()
+        # code = resp.getcode()
+        # logging.debug('code:%s, page:%s' % (code, page))
+        # return code, page
+        return self._requests_delete(suffix_url=suffix_url, headers=headers,
             data=data)
-        req.get_method = lambda: 'DELETE'
-        resp = urllib2.urlopen(req)
-        page = resp.read()
-        code = resp.getcode()
-        logging.debug('code:%s, page:%s' % (code, page))
+
+    def _requests_delete(self, suffix_url='', headers=None, data=None):
+
+        resp = requests.delete(self.baseurl+self._rslash(suffix_url),
+                headers=headers)
+        # page = resp.headers
+        page = resp.text
+        code = resp.status_code
+        logging.debug('put_resp:{}, code:{}'.format(page, code))
         return code, page

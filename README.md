@@ -1,6 +1,6 @@
 Hospital Management System Server
 ================
-Docs in docs folder or http://pa2515-hms-server.readthedocs.org/en/latest/
+Docs in docs folder or http://pa2515-hms-server.readthedocs.org/en/
 
 ## How to start the server
 There are 2 ways to start up the server, the normal way and the docker way.

@@ -18,6 +18,12 @@ def set_data(addr, data):
     #r.publish(addr, data)
 
 
+def delete_data(addr):
+    logger.debug('redis delete_data, addr:{}'.format(addr))
+    r = redis.Redis(host=ADDR)
+    r.delete(addr)
+    #r.publish(addr, data)
+
 
 def get_data(addr):
     logger.debug('redis get_data, addr:{}'.format(addr))

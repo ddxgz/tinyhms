@@ -81,8 +81,8 @@ def get_appointment(appointment_url):
         logger.error('Exception: ', ex)
         return 0, 'get appointment failed'
     else:
-        appointment_json = json.dumps({'illness':appointment})
-        return 1, appointment_json
+        # appointment_json = json.dumps({'illness':appointment})
+        return 1, appointment
 
 
 def check_appointment(doctorid, date):
@@ -110,3 +110,48 @@ def check_appointment(doctorid, date):
         # no appointment for this doctor on this date
         else:
             return 1, '{}'
+
+
+def delete_appointment(doctorid, datetimeslot, patientid):
+    """
+    delete_appointment in the system. The post data is in json format.
+
+    :param post_data: dict
+    :returns: a status, a str( appointment's url on success, err info on failure)
+
+    with database.atomic():
+                doctor = DoctorModel.create_by_dict(post_data)
+                logger.debug(doctor)
+                logger.debug('in database.atomic')
+        except peewee.IntegrityError:
+            logger.warning('in doctor model create except')
+
+    1. check if patient and doctor exist in db
+    2. check if the appointment exist in redis
+    3. make appointment if 1 and 2 ok
+    3.2 add the appointment to the doctor's that day's schedule
+    4. return if appointment exists, with reason if fail
+
+    """
+    # print(post_data)
+    try:
+        logger.debug('in delete_appointment')
+
+    # check db when patient is ok
+        rediscli.delete_data(doctorid + '/' + datetimeslot + '/' + patientid)
+        schedule = rediscli.get_data(doctorid + '/' + datetimeslot[:8])
+        if schedule:
+            schedule = ast.literal_eval(schedule)
+            del schedule[datetimeslot[8:]]
+            rediscli.set_data(doctorid + '/' + datetimeslot[:8],
+                json.dumps(schedule))
+
+
+    except Exception as ex:
+        logger.error('Exception: ', ex)
+        # q = DoctorModel.delete().where(DoctorModel.uid==doctor)
+        # q.execute()
+        return 0, 'delete_appointment failed, did not delete_appointment'
+
+    else:
+        return 1, str(doctorid + '/' + datetimeslot + '/' + patientid)

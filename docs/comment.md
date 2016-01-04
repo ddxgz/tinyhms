@@ -3,7 +3,7 @@ A doctor can make comments on a patient
 
 ## Make a Comment
 
-### POST /v1/comment/{doctorid}/{patientid}
+### POST `/v1/comment/{doctorid}/{patientid}`
 > to make a comment of a patient, post with data like this:
 ```
 {
@@ -15,5 +15,5 @@ A doctor can make comments on a patient
 
 ## Get Comments of a patient
 
-### GET /v1/comments/{patientid}
+### GET `/v1/comments/{patientid}`
 > to get all comments of a patient

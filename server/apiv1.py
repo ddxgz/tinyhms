@@ -533,12 +533,12 @@ class AppointmentListener:
         else:
             if status:
                 logger.debug('get ok, status positive')
-                resp_dict['info'] = 'Get appointment_info {} success'.format(
-                    apmt_url)
-                resp_dict['appointment_info'] = appointment_info
+                # resp_dict['info'] = 'Get appointment_info {} success'.format(
+                #     apmt_url)
+                # resp_dict['appointment_info'] = appointment_info
                 # resp.status = status or falcon.HTTP_200
                 resp.status = falcon.HTTP_200
-                resp.body = json.dumps(resp_dict,
+                resp.body = json.dumps(appointment_info,
                     sort_keys=True, indent=4)
             else:
                 logger.exception('return error when try to get appointment_info')
@@ -551,8 +551,50 @@ class AppointmentListener:
     def on_put(self, req, resp):
         pass
 
-    def on_delete(self, req, resp):
-        pass
+    def on_delete(self, req, resp, doctorid, datetimeslot, patientid):
+        """
+        Delete info of a doctor in the system. The response data is in json format.
+
+        :param req.header.username: username
+        :param req.header.password: password
+        :returns: a json contains doctor's info
+                {"doctorid":'d001', "info":{"info1":''}}
+        """
+        # authentication(req, ['admin', 'doctor', 'patient'],
+        #     doctorid=doctorid, patientid=doctorid)
+
+        resp_dict = {}
+        try:
+            """
+            handle_request:
+
+            """
+            apmt_url = doctorid + '/' + datetimeslot + '/' + patientid
+            status, appointment_info = appointment.delete_appointment(doctorid, datetimeslot, patientid)
+
+        except Exception as ex:
+            logger.exception('error when delete appointment_info, ', ex)
+            resp_dict['info'] = 'Error when delete appointment_info {}'.format(
+                apmt_url)
+            resp.status = falcon.HTTP_500
+            resp.body = json.dumps(resp_dict, sort_keys=True, indent=4)
+        else:
+            if status:
+                logger.debug('delete ok, status positive')
+                # resp_dict['info'] = 'Get appointment_info {} success'.format(
+                #     apmt_url)
+                # resp_dict['appointment_info'] = appointment_info
+                # resp.status = status or falcon.HTTP_200
+                resp.status = falcon.HTTP_200
+                resp.body = json.dumps(appointment_info,
+                    sort_keys=True, indent=4)
+            else:
+                logger.exception('return error when try to delete appointment_info')
+                resp_dict['info'] = 'Error when delete appointment_info {}'.format(
+                    apmt_url)
+                resp.status = falcon.HTTP_400
+                resp.body = json.dumps(resp_dict, sort_keys=True,
+                    indent=4)
 
 
 
@@ -586,10 +628,10 @@ class AppointmentListListener:
                 logger.debug('get ok, status positive')
                 resp_dict['info'] = 'Get appointment_info {} success'.format(
                     apmt_url)
-                resp_dict['appointment_info'] = appointment_info
+                # resp_dict['appointment_info'] = appointment_info
                 # resp.status = status or falcon.HTTP_200
                 resp.status = falcon.HTTP_200
-                resp.body = json.dumps(resp_dict,
+                resp.body = json.dumps(appointment_info,
                     sort_keys=True, indent=4)
             else:
                 logger.exception('return error when try to get appointment_info')
