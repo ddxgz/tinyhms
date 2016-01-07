@@ -1,3 +1,9 @@
+# Patients
+
+Send all requests with headers include:
+> "token":token_from_auth
+
+> "role":the_role_when_you_auth
 
 
 ### POST `/v1/patient`
@@ -25,11 +31,11 @@
 > returns a patient ID
 
 
-### GET `/v1/patient/patientid`
+### GET `/v1/patient/{patientid}`
 > to get info of a patient
 
 
-### PUT `/v1/patient/patientid`
+### PUT `/v1/patient/{patientid}`
 > to edit info of a patient
 ```
 {
@@ -52,5 +58,5 @@
 }
 ```
 
-### DELETE `/v1/patient/patientid`
+### DELETE `/v1/patient/{patientid}`
 > to delete info of a doctor

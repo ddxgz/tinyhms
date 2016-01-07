@@ -1,6 +1,11 @@
 # Discharge
 A doctor can make discharge information on a patient
 
+Send all requests with headers include:
+> "token":token_from_auth
+
+> "role":the_role_when_you_auth
+
 ## Make a Discharge info
 
 ### POST `/v1/discharge/{doctorid}/{patientid}`

@@ -1,9 +1,14 @@
 # Objects
 
+Send all requests with headers include:
+> "token":token_from_auth
+
+> "role":the_role_when_you_auth
+
 
 ## Upload an object to a patient
 
-### 1. POST `/v1/obj/patientid`
+### 1. POST `/v1/obj/{patientid}`
 > put with headers like this:
 ```
 {
@@ -26,18 +31,18 @@ with headers:
 
 ## Get objects list of a patietn
 
-### GET `/v1/objs/patientid`
+### GET `/v1/objs/{patientid}`
 > returns the available appointments
 >
 
 ## Download an object
 
-### GET `/v1/obj/patientid/objid`
+### GET `/v1/obj/{patientid}/{objid}`
 > returns a json contains auth_token and storage_url if the action success
 >
 
 
 ## Delete an object
 
-### DELETE `/v1/obj/patientid/objid`
+### DELETE `/v1/obj/{patientid}/{objid}`
 > returns if the deletion success

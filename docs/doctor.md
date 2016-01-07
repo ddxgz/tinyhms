@@ -1,3 +1,10 @@
+# Doctor
+
+Send all requests with headers include:
+> "token":token_from_auth
+
+> "role":the_role_when_you_auth
+
 
 ### POST `/v1/doctor`
 
@@ -17,11 +24,11 @@
 ```
 > returns a doctor ID
 
-### GET `/v1/doctor/doctorid`
+### GET `/v1/doctor/{doctorid}`
 > to get info of a doctor
 
 
-### PUT `/v1/doctor/doctorid`
+### PUT `/v1/doctor/{doctorid}`
 > to edit info of a doctor
 
 ```
@@ -37,5 +44,5 @@
 
 
 
-### DELETE `/v1/doctor/doctorid`
+### DELETE `/v1/doctor/{doctorid}`
 > to delete info of a doctor

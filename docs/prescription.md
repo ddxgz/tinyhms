@@ -1,6 +1,12 @@
 # Prescription
 A doctor can make prescriptions on a patient
 
+Send all requests with headers include:
+> "token":token_from_auth
+
+> "role":the_role_when_you_auth
+
+
 ## Make a Prescription
 
 ### POST `/v1/prescription/{doctorid}/{patientid}`

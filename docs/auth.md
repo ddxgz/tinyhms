@@ -3,7 +3,7 @@ Post request with username and password to certain api for a certain role, retur
 
 ## Login as Admin
 
-### POST `/v1/auth/{admin}`
+### POST `/v1/auth/admin`
 > post with data like this:
 
 ```
@@ -13,7 +13,7 @@ Post request with username and password to certain api for a certain role, retur
 }
 ```
 
-> returns if the access token or 0 on failure
+> returns a access token if success, or 0 on failure
 
 ## Login as Doctor
 
@@ -25,7 +25,7 @@ Post request with username and password to certain api for a certain role, retur
     "password":"201511201300"
 }
 ```
-> returns if the access token or 0 on failure
+> returns a access token if success, or 0 on failure
 
 
 ## Login as Patient
@@ -39,7 +39,7 @@ Post request with username and password to certain api for a certain role, retur
     "password":"201511201300"
 }
 ```
-> returns if the access token or 0 on failure
+> returns a access token if success, or 0 on failure
 
 # Authentication when make requests
 Send requests with headers include:
