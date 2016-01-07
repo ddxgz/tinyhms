@@ -23,14 +23,15 @@ $ pip install docker-compose
 ```
 
 3. Make the Swift docker to run
-3.1 data container
-```
-docker run -v /srv --name SWIFT_DATA busybox
-```
-3.2 Swift container
-```
-ID=$(docker run -d -p 8081:8080 --volumes-from SWIFT_DATA -t morrisjobke/docker-swift-onlyone)
-```
+
+    3.1. data container
+    ```
+    docker run -v /srv --name SWIFT_DATA busybox
+    ```
+    3.2 Swift container
+    ```
+    ID=$(docker run -d -p 8081:8080 --volumes-from SWIFT_DATA -t morrisjobke/docker-swift-onlyone)
+    ```
 
 4. Run the docker container of server with redis, go to the docker-compose/, run:
 ```
