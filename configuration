@@ -3,7 +3,7 @@
 #log_filename = log
 log_level = DEBUG
 api_version = 1
-redis_ip = 127.0.0.1
+redis_ip = 192.168.59.200
 
 [model]
 # sqlite3, mysql

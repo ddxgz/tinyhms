@@ -1,4 +1,5 @@
 falcon
 peewee
 python-swiftclient
+redis
 six
