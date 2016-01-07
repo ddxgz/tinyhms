@@ -13,7 +13,7 @@ just docker-compose up. The port can be changed as you like in docker-compose.ym
 
 To do this:
 
-1. Install docker
+1. Install docker (Or check on docker's official website to find how to install docker on your operating system)
 ```
 $ wget -qO- https://get.docker.com/ | sh
 ```
@@ -29,6 +29,7 @@ $ pip install docker-compose
     ```
     docker run -v /srv --name SWIFT_DATA busybox
     ```
+
     3.2 Swift container
     ```
     ID=$(docker run -d -p 8081:8080 --volumes-from SWIFT_DATA -t morrisjobke/docker-swift-onlyone)
