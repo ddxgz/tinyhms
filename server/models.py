@@ -33,6 +33,11 @@ def create_tables(config, create_initdata=False):
         PrescriptionModel, CommentModel, DischargeModel, LoginModel], safe=True)
     if create_initdata:
         pass
+    LoginModel.create(
+        username='admin',
+        password='admin',
+        role='admin'
+        )
     return database
     # database.create_tables([DoctorModel])
 
