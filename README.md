@@ -12,6 +12,7 @@ The environment is organized as a docker container, locates in docker-compose/,
 just docker-compose up. The port can be changed as you like in docker-compose.yml
 
 To do this:
+
 1. Install docker
 ```
 $ wget -qO- https://get.docker.com/ | sh
@@ -43,6 +44,7 @@ It will take some time to download the images and install dependencies.
 
 
 ### Normal way
+
 1. Install the requirements
 ```
 pip3 install -r docker-compose/requirements.txt
