@@ -98,6 +98,7 @@ Requirements
 - Falcon >= 0.3.0
 - peewee >= 2.6.1
 - swiftclient >= 2.7.0
+- redis
 - Six >= 1.9
 
 Test Requirements
@@ -107,4 +108,5 @@ Test Requirements
 - peewee >= 2.6.1
 - swiftclient >= 2.7.0
 - requests >= 2.8.1
+- redis
 - Six >= 1.9

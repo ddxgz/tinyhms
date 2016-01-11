@@ -8,8 +8,8 @@ import functools
 
 import falcon
 
-from server import doctor, patient, appointment, obj, prescription, comment, \
-    discharge, auth
+from server import (doctor, patient, appointment, obj, prescription, comment,
+    discharge, auth)
 from server import rediscli
 from server.utils import logger
 
@@ -168,25 +168,26 @@ class RegDoctorListener:
             handle_request:
 
             """
-            status, doctorid = doctor.register_doctor(post_data)
+            status, doctorid, password = doctor.register_doctor(post_data)
         except Exception as ex:
             logger.exception('error when register doctor, ', ex)
             resp_dict['info'] = 'Error when register doctor {}'.format(
-                post_data['lastname'])
+                post_data['last_name'])
             resp.status = falcon.HTTP_500
             resp.body = json.dumps(resp_dict, sort_keys=True, indent=4)
         else:
             if status:
                 logger.debug('register ok, status positive')
                 resp_dict['info'] = 'Register doctor {} success'.format(
-                    post_data['lastname'])
+                    post_data['last_name'])
                 resp_dict['doctorid'] = doctorid
+                resp_dict['password'] = password
                 resp.status = falcon.HTTP_201
                 resp.body = json.dumps(resp_dict)
             else:
                 logger.exception('return error when try to register doctor, ', ex)
                 resp_dict['errinfo'] = 'Error when register doctor {}'.format(
-                    post_data['lastname'])
+                    post_data['last_name'])
                 resp.status = falcon.HTTP_400
                 resp.body = json.dumps(resp_dict)
 
@@ -323,27 +324,28 @@ class RegPatientListener:
             handle_request:
 
             """
-            status, patientid = patient.register_patient(post_data)
+            status, patientid, password = patient.register_patient(post_data)
 
         except Exception as ex:
             logger.exception('error when register patient, ', ex)
             resp_dict['info'] = 'Error when register patient {}'.format(
-                post_data['lastname'])
+                post_data['last_name'])
             resp.status = falcon.HTTP_500
             resp.body = json.dumps(resp_dict, sort_keys=True, indent=4)
         else:
             if status:
                 logger.debug('register ok, status positive')
                 resp_dict['info'] = 'Register patient {} success'.format(
-                    post_data['lastname'])
+                    post_data['last_name'])
                 resp_dict['patientid'] = patientid
+                resp_dict['password'] = password
                 # resp.status = status or falcon.HTTP_200
                 resp.status = falcon.HTTP_201
                 resp.body = json.dumps(resp_dict)
             else:
                 logger.exception('return error when try to register patient, ', ex)
                 resp_dict['errinfo'] = 'Error when register patient {}'.format(
-                    post_data['lastname'])
+                    post_data['last_name'])
                 resp.status = falcon.HTTP_400
                 resp.body = json.dumps(resp_dict)
                 # resp.body = json.dumps(resp_dict, sort_keys=True,
@@ -1291,8 +1293,9 @@ class AuthListener:
                 #     'obj')
                 resp_dict['token'] = token
                 # resp.status = status or falcon.HTTP_200
-                resp.status = falcon.HTTP_201
+                resp.status = falcon.HTTP_200
                 resp.body = json.dumps(resp_dict)
+                # resp.body = token
             else:
                 logger.exception('return error when try to get objs, ', ex)
                 resp_dict['errinfo'] = 'Error when get objs {}'.format(
@@ -1301,3 +1304,15 @@ class AuthListener:
                 resp.body = json.dumps(resp_dict)
                 # resp.body = json.dumps(resp_dict, sort_keys=True,
                 #     indent=4)
+
+
+class TestListener:
+
+    def on_get(self, req, resp):
+        """
+        For test if server runs
+        """
+        resp_dict = {}
+        resp_dict['info'] = 'Server runs successfully'
+        resp.status = falcon.HTTP_200
+        resp.body = json.dumps(resp_dict)

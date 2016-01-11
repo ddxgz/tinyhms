@@ -2,13 +2,27 @@ hmsserver5:
     build: .
     # command: gunicorn --debug --log-level debug -b 0.0.0.0:8080 server.gateway:app
     command: python3 -m server.gateway
+    # command: python3 -m tests.integration_test
     # command: ls
     ports:
       - "8080:8080"
     volumes:
-        - /home/vagrant/data/pa2515/server:/server
+        # - /home/vagrant/data/pa2515/server:/server
+        - ..:/server
 
-redis:
-    image: redis:3.0.2
-    ports:
-      - "6379:6379"
+# redis:
+#     image: redis:3.0.2
+#     ports:
+#       - "6379:6379"
+#
+# SWIFT_DATA:
+#     image: busybox
+#     volumes:
+#         - /srv
+#
+# swift:
+#     image: morrisjobke/docker-swift-onlyone
+#     ports:
+#       - "8081:8080"
+#     volumes_from:
+#       - SWIFT_DATA

@@ -32,12 +32,11 @@ def create_tables(config, create_initdata=False):
     database.create_tables([DoctorModel, PatientModel, ObjectModel,
         PrescriptionModel, CommentModel, DischargeModel, LoginModel], safe=True)
     if create_initdata:
-        pass
-    LoginModel.create(
-        username='admin',
-        password='admin',
-        role='admin'
-        )
+        LoginModel.create(
+            username='admin',
+            password='admin',
+            role='admin'
+            )
     return database
     # database.create_tables([DoctorModel])
 
@@ -53,8 +52,8 @@ class BaseModel(Model):
 class DoctorModel(BaseModel):
     """
     {
-            'firstname':'',
-            'lastname':'',
+            'first_name':'',
+            'last_name':'',
             'qualification':'',
             'profession': 'xxx',
             'experience':'',
@@ -65,16 +64,17 @@ class DoctorModel(BaseModel):
     """
     # uid = CharField(unique=True)
     email = CharField(max_length=100, unique=True)
-    firstname = CharField(max_length=100)
-    lastname = CharField(max_length=100)
+    first_name = CharField(max_length=100)
+    last_name = CharField(max_length=100)
     qualification = CharField(max_length=100)
     profession = CharField(max_length=100)
+    birth = CharField(max_length=100)
     experience = IntegerField()
     gender = CharField(max_length=10)
     patients = TextField()
 
     class Meta:
-        order_by = ('lastname',)
+        order_by = ('last_name',)
 
     def __str__(self):
         return self.email
@@ -83,13 +83,14 @@ class DoctorModel(BaseModel):
     def create_by_dict(cls, post_data):
         return DoctorModel.create(
             # uid=str(uuid.uuid4()),
-            firstname=post_data.get('firstname'),
-            lastname=post_data.get('lastname'),
+            first_name=post_data.get('first_name'),
+            last_name=post_data.get('last_name'),
             # change after dev
-            email=post_data.get('email', '{}@hms.com'.format(
-                post_data.get('firstname')+post_data.get('lastname'))),
+            email=post_data.get('email', '{}@doctor.hms.com'.format(
+                post_data.get('first_name')+post_data.get('last_name'))),
             qualification=post_data.get('qualification', 'q'),
             profession=post_data.get('profession', 'p'),
+            birth=post_data.get('birth', ''),
             # need a better solution
             experience=int(post_data.get('experience', '0')),
             gender=post_data.get('gender', 'm'),
@@ -107,11 +108,12 @@ class DoctorModel(BaseModel):
             logger.debug('in DoctorModel.get_dict exception, ', ex)
             raise UserNotExistException()
         else:
-            user_dict['firstname'] = user.firstname
-            user_dict['lastname'] = user.lastname
+            user_dict['first_name'] = user.first_name
+            user_dict['last_name'] = user.last_name
             user_dict['email'] = user.email
             user_dict['qualification'] = user.qualification
             user_dict['profession'] = user.profession
+            user_dict['birth'] = user.birth
             user_dict['experience'] = str(user.experience)
             user_dict['gender'] = user.gender
             user_dict['patients'] = user.patients
@@ -123,10 +125,11 @@ class DoctorModel(BaseModel):
         user = DoctorModel.get(DoctorModel.email==email)
         with database.atomic():
             q = DoctorModel.update(
-                firstname=post_data.get('firstname', user.firstname),
-                lastname=post_data.get('lastname', user.lastname),
+                first_name=post_data.get('first_name', user.first_name),
+                last_name=post_data.get('last_name', user.last_name),
                 qualification=post_data.get('qualification', user.qualification),
                 profession=post_data.get('profession', user.profession),
+                birth=post_data.get('birth', user.birth),
                 experience=int(post_data.get('experience', user.experience)),
                 gender=post_data.get('gender', user.gender),
                 patients=post_data.get('patients', user.patients),
@@ -137,8 +140,8 @@ class DoctorModel(BaseModel):
 class PatientModel(BaseModel):
     # uid = CharField(unique=True)
     email = CharField(max_length=100, unique=True)
-    firstname = CharField(max_length=100)
-    lastname = CharField(max_length=100)
+    first_name = CharField(max_length=100)
+    last_name = CharField(max_length=100)
     # email = CharField()
     birthdate = CharField()
     address = CharField()
@@ -158,7 +161,7 @@ class PatientModel(BaseModel):
     billing = CharField(max_length=30)
 
     class Meta:
-        order_by = ('lastname',)
+        order_by = ('last_name',)
 
     def __str__(self):
         return self.email
@@ -167,10 +170,12 @@ class PatientModel(BaseModel):
     def create_by_dict(cls, post_data):
         return PatientModel.create(
             # uid = str(uuid.uuid4()),
-            firstname = post_data.get('firstname'),
-            lastname = post_data.get('lastname'),
+            first_name = post_data.get('first_name'),
+            last_name = post_data.get('last_name'),
             birthdate = post_data.get('birthdate', '2015'),
-            email = post_data.get('email', 'no'),
+            # email = post_data.get('email', 'no'),
+            email=post_data.get('email', '{}@patient.hms.com'.format(
+                post_data.get('first_name')+post_data.get('last_name'))),
             address = post_data.get('address', 'add'),
             mobile_phone = post_data.get('mobile_phone', '138'),
             blood_group = post_data.get('blood_group', 'a'),
@@ -197,8 +202,8 @@ class PatientModel(BaseModel):
             logger.debug('in PatientModel.get_dict exception, ', ex)
             raise UserNotExistException()
         else:
-            user_dict['firstname'] = user.firstname
-            user_dict['lastname'] = user.lastname
+            user_dict['first_name'] = user.first_name
+            user_dict['last_name'] = user.last_name
             user_dict['email'] = user.email
             user_dict['birthdate'] = user.birthdate
             user_dict['address'] = user.address
@@ -222,8 +227,8 @@ class PatientModel(BaseModel):
         user = PatientModel.get(PatientModel.email==email)
         with database.atomic():
             q = PatientModel.update(
-                firstname=post_data.get('firstname', user.firstname),
-                lastname=post_data.get('lastname', user.lastname),
+                first_name=post_data.get('first_name', user.first_name),
+                last_name=post_data.get('last_name', user.last_name),
                 gender=post_data.get('gender', user.gender),
                 birthdate = post_data.get('birthdate', user.birthdate),
                 address = post_data.get('address', user.address),
@@ -414,6 +419,60 @@ class LoginModel(BaseModel):
 
     # class Meta:
     #     primary_key = CompositeKey('username', 'role')
+    def __str__(self):
+        return str(self.username)
+
+    @classmethod
+    def create_by_dict(cls, role, post_data):
+        logger.debug('str(uuid.uuid4().hex[0:6]:{}'.format(str(uuid.uuid4().hex[0:6])))
+
+        return LoginModel.create(
+
+            # change after dev
+            username=post_data.get('email', '{}@{}.hms.com'.format(
+                post_data.get('first_name')+post_data.get('last_name'), role)),
+            role=role,
+            password=post_data.get('last_name') + str(uuid.uuid4().hex[0:6])
+            )
+
+    # @classmethod
+    # def get_dict(cls, email):
+    #     logger.debug('in DoctorModel.get_dict ')
+    #     user_dict = {}
+    #     try:
+    #         user = DoctorModel.get(DoctorModel.email==email)
+    #
+    #     except Exception as ex:
+    #         logger.debug('in DoctorModel.get_dict exception, ', ex)
+    #         raise UserNotExistException()
+    #     else:
+    #         user_dict['first_name'] = user.first_name
+    #         user_dict['last_name'] = user.last_name
+    #         user_dict['email'] = user.email
+    #         user_dict['qualification'] = user.qualification
+    #         user_dict['profession'] = user.profession
+    #         user_dict['birth'] = user.birth
+    #         user_dict['experience'] = str(user.experience)
+    #         user_dict['gender'] = user.gender
+    #         user_dict['patients'] = user.patients
+    #         logger.debug('after ger user: %s' % email)
+    #         return user_dict
+
+    # @classmethod
+    # def update_by_dict(cls, email, post_data):
+    #     user = DoctorModel.get(DoctorModel.email==email)
+    #     with database.atomic():
+    #         q = DoctorModel.update(
+    #             first_name=post_data.get('first_name', user.first_name),
+    #             last_name=post_data.get('last_name', user.last_name),
+    #             qualification=post_data.get('qualification', user.qualification),
+    #             profession=post_data.get('profession', user.profession),
+    #             birth=post_data.get('birth', user.birth),
+    #             experience=int(post_data.get('experience', user.experience)),
+    #             gender=post_data.get('gender', user.gender),
+    #             patients=post_data.get('patients', user.patients),
+    #             ).where(DoctorModel.email==email)
+    #         q.execute()
 
 
 if __name__ == '__main__':

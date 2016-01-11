@@ -1,6 +1,6 @@
 import json
 
-from server.models import database, DoctorModel
+from server.models import database, DoctorModel, LoginModel
 from server.hmsexceptions import UserNotExistException
 from server.utils import logger
 
@@ -21,6 +21,7 @@ def register_doctor(post_data):
             doctor = DoctorModel.create_by_dict(post_data)
             logger.debug(doctor)
             logger.debug('in database.atomic')
+
     # except peewee.IntegrityError:
     #     logger.warning('in doctor model create except')
 
@@ -39,10 +40,34 @@ def register_doctor(post_data):
         logger.error('Exception: ', ex)
         q = DoctorModel.delete().where(DoctorModel.email==doctor)
         q.execute()
-        return 0, 'create doctor failed, did not create doctor'
+        return 0, 'create doctor failed, did not create doctor', ''
+    try:
+        with database.atomic():
+            user = LoginModel.create_by_dict('doctor', post_data)
+            logger.debug(doctor)
+            logger.debug('in database.atomic')
+    # except peewee.IntegrityError:
+    #     logger.warning('in doctor model create except')
+
+        # # `username` is a unique column, so this username already exists,
+        # # making it safe to call .get().
+        # old_user = AccountModel.get(AccountModel.username == username)
+        # logger.warning('user exists...')
+        # resp_dict['info'] = 'user exists, did not create user:%s' % username
+        # resp.status = falcon.HTTP_409
+        # try:
+        #     change_user = AccountModel.get(AccountModel.username==username,
+        #                     AccountModel.password==password)
+        # except:
+        #     logger.debug('change user data failed...')
+    except Exception as ex:
+        logger.error('Exception: ', ex)
+        q = LoginModel.delete().where(LoginModel.username==user)
+        q.execute()
+        return 0, 'create doctor failed, did not create doctor', ''
 
     else:
-        return 1, str(doctor)
+        return 1, str(doctor), str(user.password)
 
 
 def edit_doctor(doctorid, post_data):

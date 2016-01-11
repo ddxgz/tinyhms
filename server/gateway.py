@@ -4,9 +4,12 @@
 
 from wsgiref import simple_server
 import json
+import sys
+import os
 
 import falcon
 #
+from server import models
 from server.config import conf
 
 
@@ -89,12 +92,12 @@ class JSONTranslator(object):
 
 
 if conf.api_version == "1":
-    from server.apiv1 import RegDoctorListener, DoctorListener, RegPatientListener, \
-        PatientListener, MakeAppointmentListener, AppointmentListener, \
-        AppointmentListListener, AppointmentSinkAdapter, PostObjListener, ObjectListener, \
-        ObjectListListener, AuthListener, PostPrescriptionListener, PrescriptionListListener, \
-        PostCommentListener, CommentListListener, PostDischargeListener, DischargeListener, \
-        DischargeListListener
+    from server.apiv1 import (RegDoctorListener, DoctorListener, RegPatientListener,
+        PatientListener, MakeAppointmentListener, AppointmentListener,
+        AppointmentListListener, AppointmentSinkAdapter, PostObjListener, ObjectListener,
+        ObjectListListener, AuthListener, PostPrescriptionListener, PrescriptionListListener,
+        PostCommentListener, CommentListListener, PostDischargeListener, DischargeListener,
+        DischargeListListener, TestListener)
 
 # elif conf.api_version is "2":
 #     from apiv2 import HomeListener, AccountListener, \
@@ -134,6 +137,8 @@ discharge_listener = DischargeListener()
 
 auth_listener = AuthListener()
 
+test_listener = TestListener()
+
 app.add_route('/v1/appointment', make_appointment_listener)
 app.add_route('/v1/appointment/{doctorid}/{datetimeslot}/{patientid}',
                 appointment_listener)
@@ -161,6 +166,7 @@ app.add_route('/v1/discharge/{doctorid}/{patientid}/{indate}', discharge_listene
 app.add_route('/v1/discharges/{patientid}', discharge_list_listener)
 
 app.add_route('/v1/auth/{role}', auth_listener)
+app.add_route('/v1/test', test_listener)
 
 
 def start_gateway_service(ip='0.0.0.0', port=8080):
@@ -168,8 +174,29 @@ def start_gateway_service(ip='0.0.0.0', port=8080):
     httpd.serve_forever()
 
 ## Useful for debugging problems in your API; works with pdb.set_trace()
-if __name__ == '__main__':
+def main():
     # create db
     # create admin account
     # create hms container in swift
+    argv = sys.argv
+    if len(argv) == 1:
+        models.create_tables(conf)
+    elif len(argv) == 2 and argv[1] == 'init':
+        try:
+            models.create_tables(conf, create_initdata=True)
+        except:
+            print('already created init data')
+            models.create_tables(conf)
+    elif len(argv) == 3 and argv[1] == 'delete' and argv[2] == 'db':
+        try:
+            os.remove('{}.sqlite3'.format(conf.db_filename))
+        except:
+            print('delete database failed')
+    else:
+        print('arg wrong, should be "init"')
+
     start_gateway_service()
+
+
+if __name__ == '__main__':
+    main()

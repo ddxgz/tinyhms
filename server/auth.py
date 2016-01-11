@@ -17,7 +17,7 @@ def authentication(role, post_data):
     # print(post_data)
     auth_dict = {}
     try:
-        logger.debug('in register_patient')
+        logger.debug('in authentication')
 
         user = LoginModel.get(LoginModel.username==post_data['username'],
                                 LoginModel.role==role)

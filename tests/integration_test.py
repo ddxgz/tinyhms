@@ -24,13 +24,13 @@ from server.config import Config
 from server.utils import logger
 
 
-HOST = 'http://127.0.0.1:8080'
+HOST = 'http://192.168.59.200:8080'
 ENDPOINT = HOST + '/v1'
 SUCCESS_STATUS_CODES = [200, 201, 202, 204]
 FAILURE_STATUS_CODES = [400, 401, 403, 404, 405]
 
 def runserver():
-    httpd = simple_server.make_server('127.0.0.1', 8080, app)
+    httpd = simple_server.make_server('192.168.59.200', 8080, app)
     httpd.serve_forever()
 
 
