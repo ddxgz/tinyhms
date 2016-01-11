@@ -121,7 +121,7 @@ class PatientTest(unittest.TestCase):
                 'lastname':'bbb',
                 'birthdate':'19601010'
                 }
-        status, did = register_patient(data)
+        status, did, password = register_patient(data)
 
         self.assertTrue(status)
         self.assertIn('-', did)
@@ -141,7 +141,7 @@ class PatientTest(unittest.TestCase):
                 'birthdate':'19601010',
                 'allergy':'allergy1'
                 }
-        status, did = register_patient(data)
+        status, did, password = register_patient(data)
         status, patientinfo = get_patient(patientid)
         self.assertTrue(status)
         self.assertIn(patientid, patientinfo)
@@ -177,7 +177,7 @@ class PatientTest(unittest.TestCase):
                 'height':'100',
                 'doctor_in_charge':'d1'
                 }
-        status, patientid = register_patient(data)
+        status, patientid, password = register_patient(data)
 
         self.assertTrue(status)
 
@@ -209,7 +209,7 @@ class PatientTest(unittest.TestCase):
                 'lastname':'bbb',
                 # 'billing':'cash'
                 }
-        status, did = register_patient(data)
+        status, did, password = register_patient(data)
         status, patientinfo = get_patient(patientid)
         self.assertTrue(status)
         self.assertIn(patientid, patientinfo)
@@ -224,7 +224,7 @@ class PatientTest(unittest.TestCase):
                 'lastname':'bbb',
                 'billing':'cash'
                 }
-        status, patientid = register_patient(data)
+        status, patientid, password = register_patient(data)
 
         self.assertTrue(status)
 
@@ -372,7 +372,7 @@ class ObjectTest(unittest.TestCase):
                 'lastname':'bbb',
                 'birthdate':'19601010'
                 }
-        status, did = register_patient(data)
+        status, did, password = register_patient(data)
 
         self.assertTrue(status)
         self.assertIn('-', did)
@@ -410,7 +410,7 @@ class ObjectTest(unittest.TestCase):
                 'lastname':'bbb',
                 'birthdate':'19601010'
                 }
-        status, did = register_patient(data)
+        status, did, password = register_patient(data)
 
 
         patient = PatientModel.get(PatientModel.email==patientid,
@@ -440,7 +440,7 @@ class ObjectTest(unittest.TestCase):
                 'lastname':'bbb',
                 'birthdate':'19601010'
                 }
-        status, did = register_patient(data)
+        status, did, password = register_patient(data)
 
 
         patient = PatientModel.get(PatientModel.email==patientid,
@@ -481,7 +481,7 @@ class ObjectTest(unittest.TestCase):
                 'lastname':'bbb',
                 'birthdate':'19601010'
                 }
-        status, did = register_patient(data)
+        status, did, password = register_patient(data)
 
         patient = PatientModel.get(PatientModel.email==patientid,
             PatientModel.firstname=='aaa',
@@ -573,7 +573,7 @@ class AuthTest(unittest.TestCase):
                 'firstname':'aaa',
                 'lastname':'bbb',
                 }
-        status, did = register_patient(p_data)
+        status, did, password = register_patient(p_data)
         self.assertTrue(status)
         LoginModel.create(
                     username=patientid,

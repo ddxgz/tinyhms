@@ -92,7 +92,8 @@ class JSONTranslator(object):
 
 
 if conf.api_version == "1":
-    from server.apiv1 import (RegDoctorListener, DoctorListener, RegPatientListener,
+    from server.apiv1 import (RegDoctorListener, DoctorListener, DoctorListListener,
+        RegPatientListener,
         PatientListener, MakeAppointmentListener, AppointmentListener,
         AppointmentListListener, AppointmentSinkAdapter, PostObjListener, ObjectListener,
         ObjectListListener, AuthListener, PostPrescriptionListener, PrescriptionListListener,
@@ -118,6 +119,8 @@ appointment_sink = AppointmentSinkAdapter()
 
 reg_doctor_listener = RegDoctorListener()
 doctor_listener = DoctorListener()
+doctor_list_listener = DoctorListListener()
+
 reg_patient_listener = RegPatientListener()
 patient_listener = PatientListener()
 
@@ -146,6 +149,7 @@ app.add_route('/v1/appointment/{doctorid}/{datetimeslot}/{patientid}',
 app.add_sink(appointment_sink, r'^/v1/appointment/(?P<doctor_date>.+?)$')
 
 app.add_route('/v1/doctor', reg_doctor_listener)
+app.add_route('/v1/doctors', doctor_list_listener)
 app.add_route('/v1/doctor/{doctorid}', doctor_listener)
 
 app.add_route('/v1/patient', reg_patient_listener)
@@ -190,6 +194,7 @@ def main():
     elif len(argv) == 3 and argv[1] == 'delete' and argv[2] == 'db':
         try:
             os.remove('{}.sqlite3'.format(conf.db_filename))
+            models.create_tables(conf, create_initdata=True)
         except:
             print('delete database failed')
     else:

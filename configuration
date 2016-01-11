@@ -8,6 +8,7 @@ redis_ip = 192.168.59.200
 [model]
 # sqlite3, mysql
 db_type = sqlite3
+#db_type = mysql
 # only for sqlite
 db_filename = hms
 

@@ -1,3 +1,6 @@
+# mysql:
+#     image: mysql
+
 hmsserver5:
     build: .
     # command: gunicorn --debug --log-level debug -b 0.0.0.0:8080 server.gateway:app
@@ -9,6 +12,9 @@ hmsserver5:
     volumes:
         # - /home/vagrant/data/pa2515/server:/server
         - ..:/server
+    # links:
+    #     - mysql
+
 
 # redis:
 #     image: redis:3.0.2

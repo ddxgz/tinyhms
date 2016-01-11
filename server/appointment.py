@@ -7,6 +7,28 @@ from server.hmsexceptions import UserNotExistException
 from server.utils import logger
 
 
+def compatible(schedule):
+    """
+    {
+        "0900":"0",
+        "1000":"0",
+        "1300":"1",
+        "1430":"1",
+    }
+    """
+    slots = ['0900', '1000', '1300', '1400']
+    sche_dict = json.loads(schedule)
+    # print(sche_dict)
+    # print(type(sche_dict))
+    unavaile_slots = []
+    for slot in slots:
+        if slot in sche_dict.keys():
+            continue
+        sche_dict[slot] = '0'
+    # print(sche_dict)
+    return json.dumps(sche_dict)
+
+
 def make_appointment(post_data):
     """
     make_appointment in the system. The post data is in json format.
@@ -106,10 +128,10 @@ def check_appointment(doctorid, date):
         if schedule:
             logger.debug('in check_appointment schedule data:{}'.format(schedule))
             # appointments_json = json.dumps(schedule)
-            return 1, schedule
+            return 1, compatible(schedule)
         # no appointment for this doctor on this date
         else:
-            return 1, '{}'
+            return 1, compatible('{}')
 
 
 def delete_appointment(doctorid, datetimeslot, patientid):
@@ -155,3 +177,6 @@ def delete_appointment(doctorid, datetimeslot, patientid):
 
     else:
         return 1, str(doctorid + '/' + datetimeslot + '/' + patientid)
+
+
+# compatible('{"1400":"1"}')

@@ -1,8 +1,8 @@
 import datetime
 import uuid
 
-from peewee import SqliteDatabase, Model, CharField, BooleanField, IntegerField, \
-    TextField, ForeignKeyField, CompositeKey
+from peewee import (SqliteDatabase, Model, CharField, BooleanField, IntegerField,
+    TextField, ForeignKeyField, CompositeKey, MySQLDatabase)
 
 from server.config import conf
 from server.utils import logger
@@ -20,9 +20,11 @@ from server.hmsexceptions import UserNotExistException
 
 def point_db(config):
     if config.db_type == 'sqlite3':
+        print('using sqlite ')
         database = SqliteDatabase('{}.sqlite3'.format(config.db_filename))
     elif config.db_type == 'mysql':
-        logger.error('MySQL support is not implemented yet!')
+        database = MySQLDatabase('mysql', host='192.168.59.200',
+            user="root",passwd="root")
     return database
 
 
@@ -382,11 +384,11 @@ class DischargeModel(BaseModel):
             discharge_id=patientid + '-' + doctorid + '-' + \
                 post_data.get('indate', datetime.datetime.now().strftime('%Y%m%d%H%M%S')),
             datetime=post_data.get('datetime', datetime.datetime.now().strftime('%Y%m%d%H%M%S')),
-            indate=post_data.get('indate'),
-            room=post_data.get('room'),
-            bed=post_data.get('bed'),
+            indate=post_data.get('indate', datetime.datetime.now().strftime('%Y%m%d')),
+            room=post_data.get('room', 'not assigned'),
+            bed=post_data.get('bed', 'not assigned'),
             outdate=post_data.get('outdate', 'not yet'),
-            description=post_data.get('description', ''),
+            description=post_data.get('description', 'no description'),
             )
 
     @classmethod

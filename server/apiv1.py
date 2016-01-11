@@ -294,6 +294,48 @@ class DoctorListener:
         pass
 
 
+class DoctorListListener:
+    # def __init__(self, doctorid):
+    #     self.doctorid = doctorid
+
+    def on_get(self, req, resp):
+        """
+        Get info of a doctor in the system. The response data is in json format.
+
+        :param req.header.token: token
+        :param req.header.role: role
+        :returns: a json contains doctor's info
+                {"doctorid":'d001', "info":{"info1":''}}
+        """
+        # authentication(req, ['admin', 'doctor', 'patient'])
+        resp_dict = {}
+        try:
+            """
+            handle_request:
+
+            """
+            status, doctor_list = doctor.get_doctors()
+
+        except Exception as ex:
+            logger.exception('error when get doctor, ', ex)
+            resp_dict['info'] = 'Error when get doctors'
+            resp.status = falcon.HTTP_500
+            resp.body = json.dumps(resp_dict, sort_keys=True, indent=4)
+        else:
+            if status:
+                logger.debug('get ok, status positive')
+                resp_dict['info'] = 'Get doctors success'
+                resp_dict['doctor_list'] = doctor_list
+                # resp.status = status or falcon.HTTP_200
+                resp.status = falcon.HTTP_200
+                resp.body = json.dumps(resp_dict)
+            else:
+                logger.exception('return error when try to get doctor')
+                resp_dict['info'] = 'Error when get doctors'
+                resp.status = falcon.HTTP_400
+                resp.body = json.dumps(resp_dict)
+
+
 class RegPatientListener:
 
     @falcon.before(max_body(64*1024))

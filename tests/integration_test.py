@@ -104,8 +104,8 @@ class TestApiv1(BaseTestCase):
         headers['role'] = 'admin'
         regdoc_data = {
                 'email':self.doctorid,
-                'firstname':'intest',
-                'lastname':'intest',
+                'first_name':'intest',
+                'last_name':'intest',
                 'experience':10,
                 'patients': '["{}"]'.format(self.patientid)
                 }
@@ -149,8 +149,8 @@ class TestApiv1(BaseTestCase):
         headers['role'] = 'admin'
         regpt_data = {
                 'email':self.patientid,
-                'firstname':'intest',
-                'lastname':'intest',
+                'first_name':'intest',
+                'last_name':'intest',
                 'height':'177'
                 }
         doc_code, resp_doc = visit.post(suffix_url='patient', headers=headers,
@@ -215,8 +215,8 @@ class TestApiv1(BaseTestCase):
         doctorid = '{}@hms.com'.format(str(uuid.uuid4()))
         regdoc_data = {
                 'email':doctorid,
-                'firstname':'intest',
-                'lastname':'intest',
+                'first_name':'intest',
+                'last_name':'intest',
                 'experience':10
                 }
         doc_code, resp_doc = visit.post(suffix_url='doctor', headers=headers,
@@ -268,8 +268,8 @@ class TestApiv1(BaseTestCase):
         doctorid = '{}@hms.com'.format(str(uuid.uuid4()))
         regdoc_data = {
                 'email':doctorid,
-                'firstname':'intest',
-                'lastname':'intest',
+                'first_name':'intest',
+                'last_name':'intest',
                 'experience':10
                 }
         doc_code, resp_doc = visit.post(suffix_url='doctor', headers=headers,
@@ -308,8 +308,8 @@ class TestApiv1(BaseTestCase):
         headers['role'] = 'doctor'
         putdoc_data = {
                 'email':doctorid,
-                'firstname':'intest_modi',
-                'lastname':'intest_modi',
+                'first_name':'intest_modi',
+                'last_name':'intest_modi',
                 'experience':11
                 }
         doc_code, resp_doc = visit.put(suffix_url='doctor/{}'.format(doctorid), headers=headers,
@@ -323,8 +323,8 @@ class TestApiv1(BaseTestCase):
         headers['role'] = 'admin'
         putdoc_data = {
                 'email':doctorid,
-                'firstname':'intest_modi',
-                'lastname':'intest_modi',
+                'first_name':'intest_modi',
+                'last_name':'intest_modi',
                 'experience':11
                 }
         doc_code, resp_doc = visit.put(suffix_url='doctor/{}'.format(doctorid), headers=headers,
@@ -367,8 +367,8 @@ class TestApiv1(BaseTestCase):
         patientid = '{}@hms.com'.format(str(uuid.uuid4()))
         regpt_data = {
                 'email':patientid,
-                'firstname':'intest',
-                'lastname':'intest',
+                'first_name':'intest',
+                'last_name':'intest',
                 'height':'177'
                 }
         doc_code, resp_doc = visit.post(suffix_url='patient', headers=headers,

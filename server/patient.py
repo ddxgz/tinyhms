@@ -1,6 +1,6 @@
 import json
 
-from server.models import database, PatientModel
+from server.models import database, PatientModel, LoginModel
 from server.hmsexceptions import UserNotExistException
 from server.utils import logger
 
@@ -38,12 +38,10 @@ def register_patient(post_data):
         logger.error('Exception: ', ex)
         q = PatientModel.delete().where(PatientModel.email==patient)
         q.execute()
-        return 0, 'create patient failed, did not create patient'
-
     try:
         with database.atomic():
             user = LoginModel.create_by_dict('patient', post_data)
-            logger.debug(doctor)
+            logger.debug(patient)
             logger.debug('in database.atomic')
     # except peewee.IntegrityError:
     #     logger.warning('in doctor model create except')
@@ -61,7 +59,7 @@ def register_patient(post_data):
         #     logger.debug('change user data failed...')
     except Exception as ex:
         logger.error('Exception: ', ex)
-        q = LoginModel.delete().where(LoginModel.username==user)
+        q = LoginModel.delete().where(LoginModel.username==patient)
         q.execute()
         return 0, 'create patient failed, did not create patient', ''
     else:

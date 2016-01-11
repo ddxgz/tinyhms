@@ -62,7 +62,7 @@ def register_doctor(post_data):
         #     logger.debug('change user data failed...')
     except Exception as ex:
         logger.error('Exception: ', ex)
-        q = LoginModel.delete().where(LoginModel.username==user)
+        q = LoginModel.delete().where(LoginModel.username==doctor)
         q.execute()
         return 0, 'create doctor failed, did not create doctor', ''
 
@@ -127,3 +127,34 @@ def get_doctor(doctorid):
         logger.debug(doctor_json)
 
         return 1, doctor_json
+
+
+def get_doctors():
+    """
+    Get info of doctors in the system.
+
+    :returns: a status, a str ( doctor's info on success, err info on failure)
+    """
+    # print(doctorid)
+    logger.debug('in get_doctors')
+    resp_list = []
+    try:
+        # patient = DoctorModel.get(DoctorModel.email==patientid)
+        doctors = DoctorModel.select()
+        print(doctors)
+        for doc in doctors:
+            print('doc')
+            logger.debug('docid: %s' % (doc))
+            resp_dict = {}
+            resp_dict['doctorid'] = doc.email
+            resp_dict['last_name'] = doc.last_name
+            resp_dict['first_name'] = doc.first_name
+            resp_list.append(resp_dict)
+        logger.debug('doctors:{}'.format(resp_list))
+
+    except Exception as ex:
+        logger.error('Exception: ', ex)
+        return 0, {'errinfo':'get doctors failed'}
+
+    else:
+        return 1, resp_list
