@@ -20,7 +20,7 @@ from server.hmsexceptions import UserNotExistException
 
 def point_db(config):
     if config.db_type == 'sqlite3':
-        print('using sqlite ')
+        # print('using sqlite ')
         database = SqliteDatabase('{}.sqlite3'.format(config.db_filename))
     elif config.db_type == 'mysql':
         database = MySQLDatabase('mysql', host='192.168.59.200',

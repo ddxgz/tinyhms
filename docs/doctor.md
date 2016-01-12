@@ -28,6 +28,10 @@ Send all requests with headers include:
 > to get info of a doctor
 
 
+### GET `/v1/doctors`
+> to get all the doctor's info
+
+
 ### PUT `/v1/doctor/{doctorid}`
 > to edit info of a doctor
 

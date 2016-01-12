@@ -22,14 +22,14 @@ Send all requests with headers include:
 ### 2. PUT `storage_url`
 with headers:
 ```
-    "auth_token: token"
+    "X-Auth-Token: auth_token"
     "objname: d001"
     "datetime: 201511201300"
     "patientname: paname"
 ```
 
 
-## Get objects list of a patietn
+## Get objects list of a patient
 
 ### GET `/v1/objs/{patientid}`
 > returns the available appointments

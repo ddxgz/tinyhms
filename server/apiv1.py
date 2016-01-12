@@ -327,6 +327,7 @@ class DoctorListListener:
                 resp_dict['info'] = 'Get doctors success'
                 resp_dict['doctor_list'] = doctor_list
                 # resp.status = status or falcon.HTTP_200
+                logger.debug(json.dumps(resp_dict))
                 resp.status = falcon.HTTP_200
                 resp.body = json.dumps(resp_dict)
             else:
