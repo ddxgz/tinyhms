@@ -31,6 +31,11 @@ def max_body(limit):
 def authentication(req, required_roles, doctorid='', patientid=''):
     """
     required_roles is a list of role's string
+
+    TODO: change back to the decorator way of authentication
+    may get params value (value of field expression) here by:
+    params['doctorid'], see docstring in falcon.hooks.before(action)
+
     """
     token = req.get_header('token')
     role_req = req.get_header('role')
