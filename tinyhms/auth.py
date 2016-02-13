@@ -2,10 +2,10 @@ import json
 import uuid
 import ast
 
-from server.models import database, LoginModel, DoctorModel, PatientModel
-from server import rediscli
-from server.hmsexceptions import UserNotExistException
-from server.utils import logger
+from tinyhms.models import database, LoginModel, DoctorModel, PatientModel
+from tinyhms import rediscli
+from tinyhms.hmsexceptions import UserNotExistException
+from tinyhms.utils import logger
 
 
 def authentication(role, post_data):

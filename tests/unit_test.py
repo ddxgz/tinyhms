@@ -3,10 +3,10 @@ import uuid
 import unittest
 from unittest import mock
 
-from server import auth
-from server.models import create_tables, DoctorModel, PatientModel, ObjectModel, LoginModel
-from server.config import Config
-from server.utils import logger
+from tinyhms import auth
+from tinyhms.models import create_tables, DoctorModel, PatientModel, ObjectModel, LoginModel
+from tinyhms.config import Config
+from tinyhms.utils import logger
 
 
 class UtilsTest(unittest.TestCase):

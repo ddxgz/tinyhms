@@ -2,10 +2,10 @@ import json
 
 import swiftclient
 
-from server.models import database, PrescriptionModel, PatientModel
-from server.hmsexceptions import UserNotExistException
-from server.config import conf
-from server.utils import logger
+from tinyhms.models import database, PrescriptionModel, PatientModel
+from tinyhms.hmsexceptions import UserNotExistException
+from tinyhms.config import conf
+from tinyhms.utils import logger
 
 
 def upload_prescription(patientid, doctorid, post_data):

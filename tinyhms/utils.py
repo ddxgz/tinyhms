@@ -8,7 +8,7 @@ import inspect
 import os,sys
 
 try:
-    from server.config import conf
+    from tinyhms.config import conf
 except:
     from config import conf
 

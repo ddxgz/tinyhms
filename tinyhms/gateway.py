@@ -9,8 +9,8 @@ import os
 
 import falcon
 #
-from server import models
-from server.config import conf
+from tinyhms import models
+from tinyhms.config import conf
 
 
 #conf = Config()
@@ -92,13 +92,13 @@ class JSONTranslator(object):
 
 
 if conf.api_version == "1":
-    from server.apiv1 import (RegDoctorListener, DoctorListener, DoctorListListener,
-        RegPatientListener,
-        PatientListener, MakeAppointmentListener, AppointmentListener,
-        AppointmentListListener, AppointmentSinkAdapter, PostObjListener, ObjectListener,
-        ObjectListListener, AuthListener, PostPrescriptionListener, PrescriptionListListener,
-        PostCommentListener, CommentListListener, PostDischargeListener, DischargeListener,
-        DischargeListListener, TestListener)
+    from tinyhms.apiv1 import (RegDoctorListener, DoctorListener, DoctorListListener,
+                               RegPatientListener,
+                               PatientListener, MakeAppointmentListener, AppointmentListener,
+                               AppointmentListListener, AppointmentSinkAdapter, PostObjListener, ObjectListener,
+                               ObjectListListener, AuthListener, PostPrescriptionListener, PrescriptionListListener,
+                               PostCommentListener, CommentListListener, PostDischargeListener, DischargeListener,
+                               DischargeListListener, TestListener)
 
 # elif conf.api_version is "2":
 #     from apiv2 import HomeListener, AccountListener, \

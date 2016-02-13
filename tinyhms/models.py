@@ -4,9 +4,9 @@ import uuid
 from peewee import (SqliteDatabase, Model, CharField, BooleanField, IntegerField,
     TextField, ForeignKeyField, CompositeKey, MySQLDatabase)
 
-from server.config import conf
-from server.utils import logger
-from server.hmsexceptions import UserNotExistException
+from tinyhms.config import conf
+from tinyhms.utils import logger
+from tinyhms.hmsexceptions import UserNotExistException
 
 
 

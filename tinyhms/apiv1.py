@@ -8,10 +8,10 @@ import functools
 
 import falcon
 
-from server import (doctor, patient, appointment, obj, prescription, comment,
-    discharge, auth)
-from server import rediscli
-from server.utils import logger
+from tinyhms import (doctor, patient, appointment, obj, prescription, comment,
+                     discharge, auth)
+from tinyhms import rediscli
+from tinyhms.utils import logger
 
 
 def max_body(limit):
@@ -47,7 +47,7 @@ def authentication(req, required_roles, doctorid='', patientid=''):
 
         raise falcon.HTTPUnauthorized('Auth token and Role required',
                       description,
-                      href='http://pa2515-hms-server.readthedocs.org/en/latest/auth')
+                      href='http://pa2515-hms-tinyhms.readthedocs.org/en/latest/auth')
 
     # for role in required_roles:
     if role_req == 'admin':
@@ -86,7 +86,7 @@ def authentication(req, required_roles, doctorid='', patientid=''):
 
     raise falcon.HTTPUnauthorized('Authentication required',
                                   description,
-                                  href='http://pa2515-hms-server.readthedocs.org/en/latest/auth')
+                                  href='http://pa2515-hms-tinyhms.readthedocs.org/en/latest/auth')
     return False
 
 # class authentication:
@@ -1358,7 +1358,7 @@ class TestListener:
 
     def on_get(self, req, resp):
         """
-        For test if server runs
+        For test if tinyhms runs
         """
         resp_dict = {}
         resp_dict['info'] = 'Server runs successfully'

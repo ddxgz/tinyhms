@@ -1,29 +1,27 @@
 import json
 
-from server.models import database, DoctorModel, LoginModel
-from server.hmsexceptions import UserNotExistException
-from server.utils import logger
+from tinyhms.models import database, PatientModel, LoginModel
+from tinyhms.hmsexceptions import UserNotExistException
+from tinyhms.utils import logger
 
 
-def register_doctor(post_data):
+def register_patient(post_data):
     """
-    Register a doctor in the system. The post data is a dict.
-
+    Register a patient in the system. The post data is in json format.
     :param post_data: dict
-    :returns: a status, a str( doctor's info on success, err info on failure)
+    :returns: a status, a str( patient's info on success, err info on failure)
     """
     # print(post_data)
-    doctor = ''
+    patient = ''
     try:
-        logger.debug('in register_doctor')
+        logger.debug('in register_patient')
 
         with database.atomic():
-            doctor = DoctorModel.create_by_dict(post_data)
-            logger.debug(doctor)
+            patient = PatientModel.create_by_dict(post_data)
+            logger.debug(patient)
             logger.debug('in database.atomic')
-
     # except peewee.IntegrityError:
-    #     logger.warning('in doctor model create except')
+    #     logger.warning('in patient model create except')
 
         # # `username` is a unique column, so this username already exists,
         # # making it safe to call .get().
@@ -38,13 +36,12 @@ def register_doctor(post_data):
         #     logger.debug('change user data failed...')
     except Exception as ex:
         logger.error('Exception: ', ex)
-        q = DoctorModel.delete().where(DoctorModel.email==doctor)
+        q = PatientModel.delete().where(PatientModel.email==patient)
         q.execute()
-        return 0, 'create doctor failed, did not create doctor', ''
     try:
         with database.atomic():
-            user = LoginModel.create_by_dict('doctor', post_data)
-            logger.debug(doctor)
+            user = LoginModel.create_by_dict('patient', post_data)
+            logger.debug(patient)
             logger.debug('in database.atomic')
     # except peewee.IntegrityError:
     #     logger.warning('in doctor model create except')
@@ -62,25 +59,24 @@ def register_doctor(post_data):
         #     logger.debug('change user data failed...')
     except Exception as ex:
         logger.error('Exception: ', ex)
-        q = LoginModel.delete().where(LoginModel.username==doctor)
+        q = LoginModel.delete().where(LoginModel.username==patient)
         q.execute()
-        return 0, 'create doctor failed, did not create doctor', ''
-
+        return 0, 'create patient failed, did not create patient', ''
     else:
-        return 1, str(doctor), str(user.password)
+        return 1, str(patient), str(user.password)
 
 
-def edit_doctor(doctorid, post_data):
+def edit_patient(patientid, post_data):
     """
-    Edit a doctor in the system. The post data is a dict.
+    Edit a patient in the system. The post data is a dict.
 
     :param post_data: dict
-    :returns: a status, a str( doctor's info on success, err info on failure)
+    :returns: a status, a str( patient's info on success, err info on failure)
     """
     # print(post_data)
     try:
-        logger.debug('in edit_doctor')
-        DoctorModel.update_by_dict(doctorid, post_data)
+        logger.debug('in edit_patient')
+        PatientModel.update_by_dict(patientid, post_data)
         logger.debug('executed')
     # except peewee.IntegrityError:
     #     logger.warning('in doctor model create except')
@@ -98,63 +94,30 @@ def edit_doctor(doctorid, post_data):
         #     logger.debug('change user data failed...')
     except Exception as ex:
         logger.error('Exception: ', ex)
-        return 0, 'edit_doctor failed, did not edit doctor'
+        return 0, 'edit_patient failed, did not edit_patient'
     else:
-        return 1, str(doctorid)
+        return 1, str(patientid)
 
 
-def get_doctor(doctorid):
+def get_patient(patientid):
     """
-    Get info of a doctor in the system.
-
-    :param doctorid: doctor's uid
-    :returns: a status, a str ( doctor's info on success, err info on failure)
+    Get info of a patient in the system.
+    :param patientid: patient's uid
+    :returns: a status, a str ( patient's info on success, err info on failure)
     """
-    # print(doctorid)
+    # print(patientid)
     info = {}
     try:
-        logger.debug('in get_doctor')
-        doctor_dict = DoctorModel.get_dict(doctorid)
-        logger.debug(doctor_dict)
+        logger.debug('in get_patient')
+        patient_dict = PatientModel.get_dict(patientid)
+        logger.debug(patient_dict)
     except UserNotExistException:
         logger.debug('in UserNotExistException')
-        return 0, 'get doctor failed, the required Doctor Did Not Exist'
+        return 0, 'get patient failed, the required patient Did Not Exist'
     except Exception as ex:
         logger.error('Exception: ', ex)
-        return 0, 'get doctor failed'
+        return 0, 'get patient failed'
     else:
-        doctor_json = json.dumps(doctor_dict)
-        logger.debug(doctor_json)
-
-        return 1, doctor_json
-
-
-def get_doctors():
-    """
-    Get info of doctors in the system.
-
-    :returns: a status, a str ( doctor's info on success, err info on failure)
-    """
-    # print(doctorid)
-    logger.debug('in get_doctors')
-    resp_list = []
-    try:
-        # patient = DoctorModel.get(DoctorModel.email==patientid)
-        doctors = DoctorModel.select()
-        print(doctors)
-        for doc in doctors:
-            print('doc')
-            logger.debug('docid: %s' % (doc))
-            resp_dict = {}
-            resp_dict['doctorid'] = doc.email
-            resp_dict['last_name'] = doc.last_name
-            resp_dict['first_name'] = doc.first_name
-            resp_list.append(resp_dict)
-        logger.debug('doctors:{}'.format(resp_list))
-
-    except Exception as ex:
-        logger.error('Exception: ', ex)
-        return 0, {'errinfo':'get doctors failed'}
-
-    else:
-        return 1, resp_list
+        patient_json = json.dumps(patient_dict)
+        logger.debug(patient_json)
+        return 1, patient_json

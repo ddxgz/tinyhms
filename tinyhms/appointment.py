@@ -1,10 +1,10 @@
 import json
 import ast
 
-from server.models import database, DoctorModel
-from server import rediscli
-from server.hmsexceptions import UserNotExistException
-from server.utils import logger
+from tinyhms.models import database, DoctorModel
+from tinyhms import rediscli
+from tinyhms.hmsexceptions import UserNotExistException
+from tinyhms.utils import logger
 
 
 def compatible(schedule):

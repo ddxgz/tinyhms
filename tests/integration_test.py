@@ -10,18 +10,18 @@ import json
 
 import requests
 
-from server.gateway import app
-from server.verbs import Visit
+from tinyhms.gateway import app
+from tinyhms.verbs import Visit
 
-from server.doctor import register_doctor, get_doctor, edit_doctor
-from server.patient import register_patient, get_patient, edit_patient
-from server.appointment import make_appointment, get_appointment, check_appointment
-from server.obj import upload_obj, get_obj, get_objs, delete_obj
-from server.models import create_tables, DoctorModel, PatientModel, ObjectModel, LoginModel
-from server.auth import authentication, get_token
-from server import rediscli
-from server.config import Config
-from server.utils import logger
+from tinyhms.doctor import register_doctor, get_doctor, edit_doctor
+from tinyhms.patient import register_patient, get_patient, edit_patient
+from tinyhms.appointment import make_appointment, get_appointment, check_appointment
+from tinyhms.obj import upload_obj, get_obj, get_objs, delete_obj
+from tinyhms.models import create_tables, DoctorModel, PatientModel, ObjectModel, LoginModel
+from tinyhms.auth import authentication, get_token
+from tinyhms import rediscli
+from tinyhms.config import Config
+from tinyhms.utils import logger
 
 
 HOST = 'http://192.168.59.200:8080'

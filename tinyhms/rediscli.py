@@ -3,8 +3,8 @@ import ast
 
 import redis
 
-from server.config import conf
-from server.utils import logger
+from tinyhms.config import conf
+from tinyhms.utils import logger
 
 
 
