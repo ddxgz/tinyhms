@@ -6,36 +6,36 @@ Docs in docs folder or http://pa2515-hms-server.readthedocs.org/en/
 There are 2 ways to start up the server, the normal way and the docker way.
 
 
-### Docker to setup server
+### Use Docker to setup server
 
 The environment is organized as a docker container, locates in docker-compose/,
 just docker-compose up. The port can be changed as you like in docker-compose.yml
 
 To do this:
 
-1. Install docker (Or check on docker's official website to find how to install docker on your operating system)
+- Install docker (Or check on docker's official website to find how to install docker on your operating system)
 ```
 $ wget -qO- https://get.docker.com/ | sh
 ```
 
-2. Install docker-comopse
+- Install docker-comopse
 ```
 $ pip install docker-compose
 ```
 
-3. Make the Swift docker to run
+- Make the Swift docker to run
 
-    3.1. data container
+    - data container
     ```
     docker run -v /srv --name SWIFT_DATA busybox
     ```
 
-    3.2 Swift container
+    - Swift container
     ```
     ID=$(docker run -d -p 8081:8080 --volumes-from SWIFT_DATA -t morrisjobke/docker-swift-onlyone)
     ```
 
-4. Run the docker container of server with redis, go to the docker-compose/, run:
+- Run the docker container of server with redis, go to the docker-compose/, run:
 ```
 docker-compose up
 ```
@@ -44,24 +44,25 @@ or try if with sudo
 It will take some time to download the images and install dependencies.
 
 
-### Normal way
+### The Normal way
 
-1. Install the requirements
+- Install the requirements
 ```
 pip3 install -r docker-compose/requirements.txt
 ```
 
-2. Create the db file
+- Create the db file
 ```
 python3 -m server.models
 ```
 
-3. Start the server
+- Start the server 
 ```
 python3 -m server.gateway
 ```
 
-4. Start a redis server whether local or in a docker container
+- Start a redis server whether local or in a docker container
+
 
 Functions
 ---------------
